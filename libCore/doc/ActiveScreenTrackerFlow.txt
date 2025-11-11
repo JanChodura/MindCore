@@ -1,0 +1,141 @@
+------------------------------------------------------------
+ ACTIVE SCREEN TRACKER – SYSTEM INTEGRATION OVERVIEW
+------------------------------------------------------------
+
++-----------------------------------------------------------+
+|                   ActiveScreenTracker                     |
+|-----------------------------------------------------------|
+| Central orchestrator of screen state and events.          |
+| Used across navigation, ViewModels, and triggers.         |
++----------------------+-------------------+----------------+
+       |                         |                   |
+       |                         |                   |
+       v                         v                   v
++---------------+     +----------------------+  +-----------------+
+| ScreenState   |     | NavigationReadiness  |  | ScreenReselect  |
+|   Holder      |     |     Tracker          |  |   Controller    |
++---------------+     +----------------------+  +-----------------+
+| activeScreen        | isNavHostReady       |  | isReselectPossible |
+| previousScreen      | isDataReady          |  | enable()/disable()  |
+| startDestination    | isReady (combined)   |  | handleSameScreen()  |
++---------------+     +----------------------+  +-----------------+
+       |                         |                   |
+       +-----------+-------------+-------------------+
+                   |
+                   v
+            +--------------------+
+            | ActiveScreenEventBus |
+            +--------------------+
+            | SharedFlows:        |
+            |  - screenChanges    |
+            |  - backRequests     |
+            |  - reselections     |
+            +--------------------+
+                   |
+                   v
+        +---------------------------+
+        |   NavigationCoordinator    |
+        +---------------------------+
+        | Implements NavigationDispatcher |
+        | and forwards navigation actions |
+        | to the tracker.                |
+        +---------------------------+
+                   |
+                   v
+            +------------------+
+            |   AppObserver     |
+            +------------------+
+            | Collects from bus |
+            | and starts TriggerManager. |
+            +------------------+
+
+------------------------------------------------------------
+ HOW IT FITS TOGETHER
+------------------------------------------------------------
+
+1. **UI / Navigation layer**
+   - `MainNavigator` collects from `activeScreenTracker.activeScreen`.
+   - Navigation actions are handled through `NavigationCoordinator`,
+     which delegates to `ActiveScreenTracker`.
+
+2. **ViewModel layer**
+   - Every ViewModel holds a `ViewModelContext` that provides:
+     ```kotlin
+     val activeScreenTracker: ActiveScreenTracker
+     val navigation: NavigationDispatcher
+     val observer: AppObserver
+     val triggersContext: List<TriggerContext>
+     ```
+   - ViewModels use it for navigation and trigger observation.
+
+3. **Trigger system**
+   - `AppObserver` listens to `bus.screenChanges` and `bus.reselections`.
+   - When a reselection happens, triggers like
+     `ScreenWithPagerReselectTrigger` or `ConvictionReselectTrigger`
+     react and reset page or scroll position.
+
+4. **NavigationReadinessTracker**
+   - Ensures triggers start only after both navigation and data are ready.
+   - Set from `MainNavigator.prepareTrackerAfterStart()`.
+
+------------------------------------------------------------
+ HOW TO USE IT IN APP CODE
+------------------------------------------------------------
+
+**In ViewModel**
+```kotlin
+ctx.activeScreenTracker.setActiveScreen(Screen.Convictions)
+ctx.activeScreenTracker.bus.emitReselected()
+ctx.activeScreenTracker.reselect.enableReselect()
+ctx.activeScreenTracker.readiness.setDataReady()
+```
+
+**In NavigationCoordinator**
+```kotlin
+override fun goTo(screen: CoreScreen) {
+    activeScreenTracker.setActiveScreen(screen)
+}
+```
+
+**In MainNavigator (Compose)**
+```kotlin
+LaunchedEffect(navController) {
+    navController.currentBackStackEntryFlow.collectLatest { entry ->
+        activeScreenTracker.setActiveScreen(entry.destination.route)
+    }
+}
+```
+
+------------------------------------------------------------
+ DEPLOYMENT / INTEGRATION NOTES
+------------------------------------------------------------
+
+1. **Initialization order matters:**
+   - Call `activeScreenTracker.setStartDestination(startScreen)` first.
+   - Then mark readiness:
+     ```kotlin
+     activeScreenTracker.readiness.setNavHostReady()
+     activeScreenTracker.readiness.setDataReady()
+     ```
+
+2. **Avoid duplicate reselection emits:**
+   - Use `reselect.enableReselect()` only after screen change.
+   - Let the tracker handle reselection automatically.
+
+3. **Testing:**
+   - All subcomponents (`state`, `readiness`, `reselect`, `bus`)
+     can be tested in isolation.
+   - `ActiveScreenTrackerFactory.empty()` provides no-op instance
+     for Previews and instrumentation tests.
+
+4. **Preview-safe usage:**
+   - Use `NavigationCoordinator.empty()` to provide a stub tracker
+     and avoid DI dependencies.
+
+------------------------------------------------------------
+ KEY IDEA
+------------------------------------------------------------
+ActiveScreenTracker is not a navigator — it’s a **state synchronizer**.
+It keeps all layers of the app (navigation, triggers, ViewModels)
+in perfect alignment through reactive flows.
+------------------------------------------------------------
