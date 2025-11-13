@@ -1,13 +1,14 @@
 package com.mindjourney.core.util.logging
 
-inline fun <reified T> injectedLogger(logger: ILogger, logDebugSwitch: LogDebugSwitch = off): LoggerDelegate<T> =
+inline fun <reified T> injectedLogger(logger: ILogger, logDebugSwitch: LogDebugSwitch = off): LoggerDelegate =
     LoggerDelegate(logger, T::class.simpleName ?: "Unknown", logDebugSwitch)
 
-class LoggerDelegate<T>(
+class LoggerDelegate(
     private val logger: ILogger,
     private val tag: String,
     private val logDebugSwitch: LogDebugSwitch
 ) {
+
     fun d(message: String, switch: LogDebugSwitch = logDebugSwitch) =
         logger.d(tag, message, switch)
 
