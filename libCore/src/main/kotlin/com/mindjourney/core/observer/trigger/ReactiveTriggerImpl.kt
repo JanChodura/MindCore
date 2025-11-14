@@ -1,5 +1,6 @@
 package com.mindjourney.core.observer.trigger
 
+import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.model.ReactiveTrigger
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
@@ -20,11 +21,10 @@ import kotlinx.coroutines.launch
  */
 abstract class ReactiveTriggerImpl<T>(
     private val reactiveFlow: Flow<T>,
-    private val logger: ILogger,
     override var description: TriggerDescription
 ) : ReactiveTrigger {
 
-    private val log = injectedLogger<ReactiveTrigger>(logger, off)
+    private val log = injectedLogger<ReactiveTrigger>(LoggerProvider.get(), off)
     private val _isReady = MutableStateFlow(false)
     override val isReady: StateFlow<Boolean> get() = _isReady
 
