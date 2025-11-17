@@ -4,7 +4,6 @@ import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.model.ReactiveTrigger
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
-import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import kotlinx.coroutines.CoroutineScope
