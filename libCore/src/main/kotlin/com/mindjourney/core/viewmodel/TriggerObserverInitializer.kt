@@ -1,5 +1,6 @@
 package com.mindjourney.core.viewmodel
 
+import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.TriggerPoll
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
@@ -15,7 +16,8 @@ class TriggerObserverInitializer(
     private val scope: CoroutineScope
 ) {
 
-    private val log = injectedLogger<TriggerObserverInitializer>(ctx.logger, off)
+    private val log = injectedLogger<TriggerObserverInitializer>(LoggerProvider.get(), off)
+
     /**
      * Public entry point for initializing trigger observation for given ViewModel.
      */
@@ -31,7 +33,6 @@ class TriggerObserverInitializer(
 
         ctx.triggersContext.forEach { triggerContext ->
             triggerContext.triggerPoll = TriggerPoll(
-                logger = ctx.logger,
                 scope = scope,
                 description = triggerContext.description
             )
@@ -48,8 +49,7 @@ class TriggerObserverInitializer(
     private fun initObserverForPrimaryVM(activePrimaries: List<BaseViewModel>) {
         when {
             activePrimaries.size > 1 -> {
-                ctx.logger.e(
-                    "BaseViewModel",
+                log.e(
                     "Multiple primary ViewModels detected: ${activePrimaries.map { it::class.simpleName }}",
                     null
                 )

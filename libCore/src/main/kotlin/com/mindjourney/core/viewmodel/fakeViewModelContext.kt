@@ -23,14 +23,12 @@ fun fakeViewModelContext(): ViewModelContext {
     val fakeAppObserver = AppObserver(
         scope = fakeScope,
         tracker = fakeTracker,
-        logger = fakeLogger,
         resultConsumer = TriggerResultConsumer.empty()
     )
 
     val fakeNavigation = NavigationCoordinator.empty()
 
     val fakeCtx = ViewModelContext(
-        logger = fakeLogger,
         navigation = fakeNavigation,
         screenTracker = fakeTracker,
         observer = fakeAppObserver,

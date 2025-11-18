@@ -4,7 +4,6 @@ import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.model.Tick
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.util.TickFactory
-import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import kotlinx.coroutines.CoroutineScope
@@ -28,19 +27,17 @@ import kotlin.coroutines.EmptyCoroutineContext
  * while still following a timed evaluation pattern.
  */
 class TriggerPoll(
-    private val logger: ILogger,
     private var scope: CoroutineScope? = null,
     var description: TriggerDescription,
 ) {
 
-    private val log = injectedLogger<TriggerPoll>(logger, off)
+    private val log = injectedLogger<TriggerPoll>(LoggerProvider.get(), off)
 
     companion object {
 
         /** Creates an empty/no-op instance of TriggerPoll for cases where DI is not available like Preview, Tests. */
         fun empty(): TriggerPoll =
             TriggerPoll(
-                LoggerProvider.get(),
                 CoroutineScope(EmptyCoroutineContext),
                 description = TriggerDescription.empty()
             )

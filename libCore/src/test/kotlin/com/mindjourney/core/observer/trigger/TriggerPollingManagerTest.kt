@@ -26,13 +26,11 @@ class TriggerPollingManagerTest {
 
     private lateinit var testScope: TestScope
     private lateinit var testDispatcher: TestDispatcher
-    private lateinit var logger: ILogger
 
     @Before
     fun setup() {
         testDispatcher = StandardTestDispatcher()
         testScope = TestScope(testDispatcher)
-        logger = TestLogger()
     }
 
     @After
@@ -45,8 +43,9 @@ class TriggerPollingManagerTest {
         // Arrange
         val expectedResult = TriggerResult.ExecuteAction("testAction")
         val trigger = TestTrigger(expectedResult)
-        val manager = UtilTriggerPollingManager.createSimpleManager(logger, testScope, trigger)
+        val manager = UtilTriggerPollingManager.createSimpleManager( testScope, trigger)
         UtilTriggerReflection.injectSingleTrigger(manager, testScope, trigger)
+
 
         // Act + Assert
         manager.triggerResult

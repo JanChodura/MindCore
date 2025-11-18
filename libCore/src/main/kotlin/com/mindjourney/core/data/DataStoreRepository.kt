@@ -2,7 +2,7 @@ package com.mindjourney.core.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.mindjourney.core.util.logging.ILogger
+import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import kotlinx.coroutines.CoroutineScope
@@ -24,9 +24,8 @@ import javax.inject.Inject
  */
 open class DataStoreRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val logger: ILogger
 ) {
-    private val log = injectedLogger<DataStoreRepository>(logger, off)
+    private val log = injectedLogger<DataStoreRepository>(LoggerProvider.get(), off)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     fun <T> save(key: Preferences.Key<T>, value: T) = scope.launch {
@@ -59,6 +58,7 @@ open class DataStoreRepository @Inject constructor(
             preferences.toMutablePreferences().apply { remove(key) }
         }
     }
+
     open fun close() {
         scope.cancel()
     }

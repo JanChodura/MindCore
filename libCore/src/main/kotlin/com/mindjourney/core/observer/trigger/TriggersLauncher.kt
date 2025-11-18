@@ -1,8 +1,8 @@
 package com.mindjourney.core.observer.trigger
 
+import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.model.PollingTrigger
 import com.mindjourney.core.observer.trigger.util.TriggerContext
-import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import kotlinx.coroutines.Job
@@ -19,14 +19,13 @@ import kotlinx.coroutines.Job
  * while polling triggers are restarted every time a screen or context changes.
  */
 class TriggersLauncher(
-    private val logger: ILogger,
     private val cancelExistingJobs: () -> Unit,
     private val startTrigger: (TriggerContext) -> Unit,
     private val getAllTriggers: () -> List<TriggerContext>,
     private val getReactiveJobs: () -> List<Job>
 ) {
 
-    private val log = injectedLogger<TriggersLauncher>(logger, off)
+    private val log = injectedLogger<TriggersLauncher>(LoggerProvider.get(), off)
 
     /**
      * Public entry point for launching all triggers.

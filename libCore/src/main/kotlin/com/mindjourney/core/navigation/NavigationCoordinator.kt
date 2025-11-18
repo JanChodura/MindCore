@@ -4,7 +4,6 @@ import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.tracking.ActiveScreenTrackerFactory
 import com.mindjourney.core.tracking.ScreenTracker
 import com.mindjourney.core.tracking.model.CoreScreen
-import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import javax.inject.Inject
@@ -12,14 +11,13 @@ import javax.inject.Singleton
 
 @Singleton
 class NavigationCoordinator @Inject constructor(
-    private val logger: ILogger,
     private val screenTracker: ScreenTracker,
 ) : NavigationDispatcher {
 
-    private val log = injectedLogger<NavigationCoordinator>(logger, off)
+    private val log = injectedLogger<NavigationCoordinator>(LoggerProvider.get(), off)
 
     companion object {
-        fun empty() = NavigationCoordinator(LoggerProvider.get(), ActiveScreenTrackerFactory.empty())
+        fun empty() = NavigationCoordinator(ActiveScreenTrackerFactory.empty())
     }
 
     override fun goTo(screen: CoreScreen) {

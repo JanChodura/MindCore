@@ -28,25 +28,23 @@ import kotlin.coroutines.EmptyCoroutineContext
 class AppObserver @Inject constructor(
     private val scope: CoroutineScope,
     private val tracker: ScreenTracker,
-    private val logger: ILogger,
     private val resultConsumer: TriggerResultConsumer,
 ) {
 
-    private val log = injectedLogger<AppObserver>(logger, off)
+    private val log = injectedLogger<AppObserver>(LoggerProvider.get(), off)
 
     companion object {
         /** Creates an empty/no-op instance of AppObserver for cases where DI is not available like Preview, Tests. */
         fun empty(): AppObserver = AppObserver(
             CoroutineScope(EmptyCoroutineContext),
             ActiveScreenTrackerFactory.empty(),
-            LoggerProvider.get(),
             TriggerResultConsumer.empty()
         )
     }
 
     private var isTrackerObserved = false
 
-    private val triggerManager = TriggerManager(scope, logger)
+    private val triggerManager = TriggerManager(scope)
 
     private var triggersFlow: StateFlow<List<TriggerContext>>? = null
 

@@ -15,7 +15,6 @@ import javax.inject.Singleton
  */
 @Singleton
 class ViewModelContext(
-    val logger: ILogger,
     /**
      * Indicates whether this ViewModelContext is currently designated as the primary observer holder.
      * ViewModel can call setAsPrimary() to start observing triggers.

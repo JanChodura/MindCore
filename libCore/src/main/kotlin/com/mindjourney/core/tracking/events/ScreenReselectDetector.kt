@@ -1,7 +1,7 @@
 package com.mindjourney.core.tracking.events
 
+import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.tracking.model.ScreenChangeCounter
-import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.on
 
@@ -20,11 +20,9 @@ import com.mindjourney.core.util.logging.on
  * - Otherwise, it's the first activation of the screen.
  *
  */
-class ScreenReselectDetector(
-    private val logger: ILogger
-) {
+class ScreenReselectDetector() {
 
-    private val log = injectedLogger<ScreenReselectDetector>(logger, on)
+    private val log = injectedLogger<ScreenReselectDetector>(LoggerProvider.get(), on)
 
     private var _isReselectHappened = false
     val isReselectHappened: Boolean get() = _isReselectHappened

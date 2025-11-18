@@ -1,9 +1,9 @@
 package com.mindjourney.core.observer.trigger
 
+import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.model.TriggerResult
 import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
 import com.mindjourney.core.observer.trigger.util.TriggerContext
-import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import kotlinx.coroutines.CoroutineScope
@@ -20,10 +20,9 @@ import kotlinx.coroutines.launch
  */
 class TriggerManager(
     private val scope: CoroutineScope,
-    private val logger: ILogger,
 ) {
 
-    private val log = injectedLogger<TriggerManager>(logger, off)
+    private val log = injectedLogger<TriggerManager>(LoggerProvider.get(), off)
     private val activeJobs = mutableListOf<Job>()
     private val triggers: MutableList<TriggerContext> = mutableListOf()
 
@@ -32,14 +31,13 @@ class TriggerManager(
 
     private val reactiveJobs = mutableListOf<Job>()
     private val triggersLauncher = TriggersLauncher(
-        logger = logger,
         cancelExistingJobs = { cancelExistingJobs() },
         startTrigger = { triggerSelector.init(it) },
         getAllTriggers = { triggers },
         getReactiveJobs = { reactiveJobs }
     )
 
-    private val triggerSelector = TriggerInitializer(scope, logger) { result ->
+    private val triggerSelector = TriggerInitializer(scope) { result ->
         if (result !is TriggerResult.None) _triggerResult.value = result
     }
 
@@ -56,7 +54,7 @@ class TriggerManager(
 
     /** Cancels all running jobs. */
     fun cancelExistingJobs() {
-        log.d( "Cancelling ${activeJobs.size} existing trigger jobs")
+        log.d("Cancelling ${activeJobs.size} existing trigger jobs")
         activeJobs.forEach { it.cancel() }
         activeJobs.clear()
     }

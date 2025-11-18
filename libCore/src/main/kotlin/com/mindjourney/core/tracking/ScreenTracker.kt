@@ -7,7 +7,6 @@ import com.mindjourney.core.tracking.model.CoreScreen
 import com.mindjourney.core.tracking.state.HistoryScreenHolder
 import com.mindjourney.core.tracking.state.NavigationReadinessTracker
 import com.mindjourney.core.tracking.state.ScreenStateHolder
-import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.on
 import javax.inject.Inject
@@ -35,19 +34,18 @@ import javax.inject.Singleton
  */
 @Singleton
 class ScreenTracker @Inject constructor(
-    private val logger: ILogger,
     private val startingScreen: CoreScreen = CoreScreen.Unknown,
     private val fromRoute: (String?) -> CoreScreen = { CoreScreen.Unknown }
 ) {
 
-    private val log = injectedLogger<ScreenTracker>(logger, on)
+    private val log = injectedLogger<ScreenTracker>(LoggerProvider.get(), on)
 
     // --- Core subcomponents ---
-    val state = ScreenStateHolder(startingScreen, logger)
+    val state = ScreenStateHolder(startingScreen)
     val history = HistoryScreenHolder()
-    val readiness = NavigationReadinessTracker(logger)
-    val reselect = ScreenReselectDetector(logger)
-    val bus = ActiveScreenEventBus(logger)
+    val readiness = NavigationReadinessTracker()
+    val reselect = ScreenReselectDetector()
+    val bus = ActiveScreenEventBus()
 
     // --- Convenience accessors ---
     val activeScreen get() = state.activeScreen
@@ -102,6 +100,6 @@ class ScreenTracker @Inject constructor(
             state.activeScreen.value
 
     companion object {
-        fun empty(logger: ILogger = LoggerProvider.get()) = ScreenTracker(logger)
+        fun empty() = ScreenTracker()
     }
 }

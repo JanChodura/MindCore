@@ -1,12 +1,12 @@
 package com.mindjourney.core.observer.trigger
 
 import com.mindjourney.common.BuildConfig
+import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.model.PollingTrigger
 import com.mindjourney.core.observer.trigger.model.ReactiveTrigger
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
 import com.mindjourney.core.observer.trigger.util.TriggerContext
-import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import kotlinx.coroutines.CoroutineScope
@@ -20,11 +20,10 @@ import kotlinx.coroutines.CoroutineScope
  */
 class TriggerInitializer(
     private val scope: CoroutineScope,
-    private val logger: ILogger,
     private val onResult: (TriggerResult) -> Unit
 ) {
 
-    private val log = injectedLogger<TriggerInitializer>(logger, off)
+    private val log = injectedLogger<TriggerInitializer>(LoggerProvider.get(), off)
 
     /** Entry point – determines and initializes the correct trigger type. */
     fun init(context: TriggerContext) {
@@ -32,7 +31,7 @@ class TriggerInitializer(
         when (trigger) {
             is PollingTrigger -> initPollingTrigger(triggerPoll, description, context, trigger)
             is ReactiveTrigger -> initReactiveTrigger(description, trigger)
-            else -> log.w( "Trigger:$description does not implement PollingTrigger or ReactiveTrigger")
+            else -> log.w("Trigger:$description does not implement PollingTrigger or ReactiveTrigger")
         }
     }
 
