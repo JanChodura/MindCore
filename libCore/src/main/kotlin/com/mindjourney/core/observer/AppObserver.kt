@@ -31,7 +31,7 @@ class AppObserver @Inject constructor(
     private val resultConsumer: TriggerResultConsumer,
 ) {
 
-    private val log = injectedLogger<AppObserver>(LoggerProvider.get(), off)
+    private val log = injectedLogger<AppObserver>(off)
 
     companion object {
         /** Creates an empty/no-op instance of AppObserver for cases where DI is not available like Preview, Tests. */

@@ -25,7 +25,7 @@ import javax.inject.Inject
 open class DataStoreRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
 ) {
-    private val log = injectedLogger<DataStoreRepository>(LoggerProvider.get(), off)
+    private val log = injectedLogger<DataStoreRepository>(off)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     fun <T> save(key: Preferences.Key<T>, value: T) = scope.launch {

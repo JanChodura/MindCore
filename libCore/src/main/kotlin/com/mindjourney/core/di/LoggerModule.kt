@@ -3,6 +3,7 @@ package com.mindjourney.core.di
 import com.mindjourney.common.BuildConfig
 import com.mindjourney.core.logger.ILoggerConfig
 import com.mindjourney.core.util.logging.AppLogger
+import com.mindjourney.core.util.logging.GlobalLoggerHolder
 import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.LoggingDelegate
 import com.mindjourney.core.util.logging.processoring.ILoggingWrapper
@@ -29,17 +30,6 @@ object LoggerModule {
     }
 
     /**
-     * Provides the default application logger.
-     *
-     * @return An instance of [com.mindjourney.core.util.logging.ILogger] for logging messages.
-     */
-    @Provides
-    @Singleton
-    fun provideAppLogger(loggerConfig: ILoggerConfig): ILogger {
-        return AppLogger(loggerConfig)
-    }
-
-    /**
      * Provides a logging delegate that wraps instances implementing [ILoggingWrapper].
      * If logging is enabled, it returns an instance wrapped in [LoggingDelegate].
      * Otherwise, it returns the original instance.
@@ -51,5 +41,18 @@ object LoggerModule {
     @Singleton
     fun provideLoggingDelegate(instance: ILoggingWrapper, logger: ILogger): ILoggingWrapper {
         return if (ENABLE_LOGGING) LoggingDelegate(instance, logger) else instance
+    }
+
+    /**
+     * Provides a configured [AppLogger] and initializes the [GlobalLoggerHolder] with it.
+     *
+     * @param appLogger The application logger to be provided.
+     * @return The configured [ILogger] instance.
+     */
+    @Provides
+    @Singleton
+    fun provideConfiguredLogger(appLogger: AppLogger): ILogger {
+        GlobalLoggerHolder.init(appLogger)
+        return appLogger
     }
 }

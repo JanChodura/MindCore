@@ -22,7 +22,7 @@ class TriggerManager(
     private val scope: CoroutineScope,
 ) {
 
-    private val log = injectedLogger<TriggerManager>(LoggerProvider.get(), off)
+    private val log = injectedLogger<TriggerManager>(off)
     private val activeJobs = mutableListOf<Job>()
     private val triggers: MutableList<TriggerContext> = mutableListOf()
 

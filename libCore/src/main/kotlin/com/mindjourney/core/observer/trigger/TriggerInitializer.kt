@@ -23,7 +23,7 @@ class TriggerInitializer(
     private val onResult: (TriggerResult) -> Unit
 ) {
 
-    private val log = injectedLogger<TriggerInitializer>(LoggerProvider.get(), off)
+    private val log = injectedLogger<TriggerInitializer>(off)
 
     /** Entry point – determines and initializes the correct trigger type. */
     fun init(context: TriggerContext) {

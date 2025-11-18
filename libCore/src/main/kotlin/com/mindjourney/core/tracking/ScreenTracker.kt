@@ -38,7 +38,7 @@ class ScreenTracker @Inject constructor(
     private val fromRoute: (String?) -> CoreScreen = { CoreScreen.Unknown }
 ) {
 
-    private val log = injectedLogger<ScreenTracker>(LoggerProvider.get(), on)
+    private val log = injectedLogger<ScreenTracker>(on)
 
     // --- Core subcomponents ---
     val state = ScreenStateHolder(startingScreen)

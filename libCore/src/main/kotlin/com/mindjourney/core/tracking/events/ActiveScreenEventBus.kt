@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.asSharedFlow
  */
 class ActiveScreenEventBus {
 
-    private val log = injectedLogger<ActiveScreenEventBus>(LoggerProvider.get(), on)
+    private val log = injectedLogger<ActiveScreenEventBus>(on)
 
     private val _screenChanges = MutableSharedFlow<CoreScreen>(extraBufferCapacity = 1)
     val screenChanges: SharedFlow<CoreScreen> get() = _screenChanges.asSharedFlow()

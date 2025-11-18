@@ -22,7 +22,7 @@ import com.mindjourney.core.util.logging.on
  */
 class ScreenReselectDetector() {
 
-    private val log = injectedLogger<ScreenReselectDetector>(LoggerProvider.get(), on)
+    private val log = injectedLogger<ScreenReselectDetector>(on)
 
     private var _isReselectHappened = false
     val isReselectHappened: Boolean get() = _isReselectHappened

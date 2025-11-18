@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.StateFlow
  */
 class NavigationReadinessTracker() {
 
-    private val log = injectedLogger<NavigationReadinessTracker>(LoggerProvider.get(), on)
+    private val log = injectedLogger<NavigationReadinessTracker>(on)
 
     // Internal state flags
     private val _isNavHostReady = MutableStateFlow(false)

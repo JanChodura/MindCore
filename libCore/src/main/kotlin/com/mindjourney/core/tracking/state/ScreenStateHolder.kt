@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.StateFlow
  * ```
  */
 class ScreenStateHolder(startingScreen: CoreScreen) {
-    private val log = injectedLogger<ScreenStateHolder>(LoggerProvider.get(), on)
+    private val log = injectedLogger<ScreenStateHolder>(on)
 
     private val _activeScreen: MutableStateFlow<CoreScreen> = MutableStateFlow(CoreScreen.Unknown)
     val activeScreen: StateFlow<CoreScreen> get() = _activeScreen

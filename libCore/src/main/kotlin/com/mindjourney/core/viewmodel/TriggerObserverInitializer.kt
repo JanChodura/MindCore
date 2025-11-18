@@ -16,7 +16,7 @@ class TriggerObserverInitializer(
     private val scope: CoroutineScope
 ) {
 
-    private val log = injectedLogger<TriggerObserverInitializer>(LoggerProvider.get(), off)
+    private val log = injectedLogger<TriggerObserverInitializer>(off)
 
     /**
      * Public entry point for initializing trigger observation for given ViewModel.

@@ -31,7 +31,7 @@ class TriggerPoll(
     var description: TriggerDescription,
 ) {
 
-    private val log = injectedLogger<TriggerPoll>(LoggerProvider.get(), off)
+    private val log = injectedLogger<TriggerPoll>(off)
 
     companion object {
 

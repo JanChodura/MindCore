@@ -25,7 +25,7 @@ class TriggersLauncher(
     private val getReactiveJobs: () -> List<Job>
 ) {
 
-    private val log = injectedLogger<TriggersLauncher>(LoggerProvider.get(), off)
+    private val log = injectedLogger<TriggersLauncher>(off)
 
     /**
      * Public entry point for launching all triggers.

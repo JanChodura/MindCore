@@ -23,7 +23,7 @@ abstract class ReactiveTriggerImpl<T>(
     override var description: TriggerDescription
 ) : ReactiveTrigger {
 
-    private val log = injectedLogger<ReactiveTrigger>(LoggerProvider.get(), off)
+    private val log = injectedLogger<ReactiveTrigger>(off)
     private val _isReady = MutableStateFlow(false)
     override val isReady: StateFlow<Boolean> get() = _isReady
 
