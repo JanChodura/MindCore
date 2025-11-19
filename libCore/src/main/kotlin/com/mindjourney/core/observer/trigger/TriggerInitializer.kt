@@ -1,9 +1,8 @@
 package com.mindjourney.core.observer.trigger
 
 import com.mindjourney.common.BuildConfig
-import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.model.PollingTrigger
-import com.mindjourney.core.observer.trigger.model.ReactiveTrigger
+import com.mindjourney.core.observer.trigger.model.IReactiveTrigger
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
 import com.mindjourney.core.observer.trigger.util.TriggerContext
@@ -30,7 +29,7 @@ class TriggerInitializer(
         val (description, trigger, triggerPoll) = context
         when (trigger) {
             is PollingTrigger -> initPollingTrigger(triggerPoll, description, context, trigger)
-            is ReactiveTrigger -> initReactiveTrigger(description, trigger)
+            is IReactiveTrigger -> initReactiveTrigger(description, trigger)
             else -> log.w("Trigger:$description does not implement PollingTrigger or ReactiveTrigger")
         }
     }
@@ -56,8 +55,8 @@ class TriggerInitializer(
     /** Initializes and starts a ReactiveTrigger. */
     private fun initReactiveTrigger(
         description: TriggerDescription,
-        trigger: ReactiveTrigger
-    ): ReactiveTrigger {
+        trigger: IReactiveTrigger
+    ): IReactiveTrigger {
         log.d("Initializing ReactiveTrigger: $description")
         trigger.startReactiveFlow(scope, description) { result ->
             if (result !is TriggerResult.None) onResult(result)

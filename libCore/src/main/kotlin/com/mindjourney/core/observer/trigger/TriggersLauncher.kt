@@ -5,6 +5,7 @@ import com.mindjourney.core.observer.trigger.model.PollingTrigger
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
+import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.Job
 
 /**

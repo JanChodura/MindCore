@@ -4,7 +4,7 @@ package com.mindjourney.core.observer.trigger.model
 * Represents a reactive trigger which emits results based on
 * reactive data flows (e.g., Flow, LiveData, external event streams).
 */
-interface ReactiveTrigger : IAppTrigger {
+interface IReactiveTrigger : IAppTrigger {
 
     /**
      * Starts a reactive flow observation.

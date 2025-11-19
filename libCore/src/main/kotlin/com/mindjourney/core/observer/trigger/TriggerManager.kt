@@ -6,6 +6,7 @@ import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
+import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,7 @@ class TriggerManager(
     private val scope: CoroutineScope,
 ) {
 
-    private val log = injectedLogger<TriggerManager>(off)
+    private val log = injectedLogger<TriggerManager>(on)
     private val activeJobs = mutableListOf<Job>()
     private val triggers: MutableList<TriggerContext> = mutableListOf()
 

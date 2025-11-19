@@ -1,7 +1,6 @@
 package com.mindjourney.core.observer.trigger
 
-import com.mindjourney.core.logger.LoggerProvider
-import com.mindjourney.core.observer.trigger.model.ReactiveTrigger
+import com.mindjourney.core.observer.trigger.model.IReactiveTrigger
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
 import com.mindjourney.core.util.logging.injectedLogger
@@ -14,16 +13,16 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
- * Base implementation of [ReactiveTrigger].
+ * Base implementation of [IReactiveTrigger].
  * Provides helper to observe any [Flow] of data changes
  * and call [tryExecute] reactively when changes occur.
  */
-abstract class ReactiveTriggerImpl<T>(
+abstract class ReactiveTrigger<T>(
     private val reactiveFlow: Flow<T>,
     override var description: TriggerDescription
-) : ReactiveTrigger {
+) : IReactiveTrigger {
 
-    private val log = injectedLogger<ReactiveTrigger>(off)
+    private val log = injectedLogger<IReactiveTrigger>(off)
     private val _isReady = MutableStateFlow(false)
     override val isReady: StateFlow<Boolean> get() = _isReady
 
