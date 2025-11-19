@@ -1,13 +1,10 @@
 package com.mindjourney.core.observer
 
-import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.TriggerManager
 import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.tracking.ActiveScreenTrackerFactory
 import com.mindjourney.core.tracking.ScreenTracker
-import com.mindjourney.core.util.logging.ILogger
-
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import kotlinx.coroutines.CoroutineScope
