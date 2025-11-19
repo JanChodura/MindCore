@@ -1,9 +1,9 @@
 package com.mindjourney.core.tracking.state
 
-import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.tracking.model.CoreScreen
 import com.mindjourney.core.tracking.model.ScreenChangeCounter
 import com.mindjourney.core.util.logging.injectedLogger
+import com.mindjourney.core.util.logging.off
 import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.StateFlow
  * ```
  */
 class ScreenStateHolder(startingScreen: CoreScreen) {
-    private val log = injectedLogger<ScreenStateHolder>(on)
+    private val log = injectedLogger<ScreenStateHolder>(off)
 
     private val _activeScreen: MutableStateFlow<CoreScreen> = MutableStateFlow(CoreScreen.Unknown)
     val activeScreen: StateFlow<CoreScreen> get() = _activeScreen

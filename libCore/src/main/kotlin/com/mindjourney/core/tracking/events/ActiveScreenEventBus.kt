@@ -3,6 +3,7 @@ package com.mindjourney.core.tracking.events
 import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.tracking.model.CoreScreen
 import com.mindjourney.core.util.logging.injectedLogger
+import com.mindjourney.core.util.logging.off
 import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -27,7 +28,7 @@ import kotlinx.coroutines.flow.asSharedFlow
  */
 class ActiveScreenEventBus {
 
-    private val log = injectedLogger<ActiveScreenEventBus>(on)
+    private val log = injectedLogger<ActiveScreenEventBus>(off)
 
     private val _screenChanges = MutableSharedFlow<CoreScreen>(extraBufferCapacity = 1)
     val screenChanges: SharedFlow<CoreScreen> get() = _screenChanges.asSharedFlow()
