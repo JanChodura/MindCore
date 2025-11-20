@@ -25,6 +25,11 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
      * as it LEADS to issues with dependency injection frameworks like Hilt.
      */
     protected fun ensureInit(scope: CoroutineScope) {
+        val isSimpleViewModel = ctx == null
+        if(isSimpleViewModel){
+            return
+        }
+
         viewModelScope = scope
 
         viewModelScope.launch {
