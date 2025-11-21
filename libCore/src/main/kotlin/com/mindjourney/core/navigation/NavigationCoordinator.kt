@@ -1,7 +1,6 @@
 package com.mindjourney.core.navigation
 
-import com.mindjourney.core.logger.LoggerProvider
-import com.mindjourney.core.tracking.ActiveScreenTrackerFactory
+import com.mindjourney.core.tracking.ScreenTrackerFactory
 import com.mindjourney.core.tracking.ScreenTracker
 import com.mindjourney.core.tracking.model.CoreScreen
 import com.mindjourney.core.util.logging.injectedLogger
@@ -17,7 +16,7 @@ class NavigationCoordinator @Inject constructor(
     private val log = injectedLogger<NavigationCoordinator>(off)
 
     companion object {
-        fun empty() = NavigationCoordinator(ActiveScreenTrackerFactory.empty())
+        fun empty() = NavigationCoordinator(ScreenTrackerFactory.empty())
     }
 
     override fun goTo(screen: CoreScreen) {

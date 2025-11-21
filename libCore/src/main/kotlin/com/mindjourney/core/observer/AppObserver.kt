@@ -3,7 +3,7 @@ package com.mindjourney.core.observer
 import com.mindjourney.core.observer.trigger.TriggerManager
 import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
 import com.mindjourney.core.observer.trigger.util.TriggerContext
-import com.mindjourney.core.tracking.ActiveScreenTrackerFactory
+import com.mindjourney.core.tracking.ScreenTrackerFactory
 import com.mindjourney.core.tracking.ScreenTracker
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
@@ -34,7 +34,7 @@ class AppObserver @Inject constructor(
         /** Creates an empty/no-op instance of AppObserver for cases where DI is not available like Preview, Tests. */
         fun empty(): AppObserver = AppObserver(
             CoroutineScope(EmptyCoroutineContext),
-            ActiveScreenTrackerFactory.empty(),
+            ScreenTrackerFactory.empty(),
             TriggerResultConsumer.empty()
         )
     }
