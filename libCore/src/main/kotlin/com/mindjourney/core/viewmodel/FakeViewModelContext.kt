@@ -3,14 +3,14 @@ package com.mindjourney.core.viewmodel
 import com.mindjourney.core.navigation.NavigationCoordinator
 import com.mindjourney.core.observer.AppObserver
 import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
-import com.mindjourney.core.tracking.ActiveScreenTrackerFactory
+import com.mindjourney.core.tracking.ScreenTrackerFactory
 import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.LogDebugSwitch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-fun fakeViewModelContext(): ViewModelContext {
+fun FakeViewModelContext(): ViewModelContext {
 
     val fakeLogger = object : ILogger {
         override fun d(tag: String, message: String, switch: LogDebugSwitch) {}
@@ -19,7 +19,7 @@ fun fakeViewModelContext(): ViewModelContext {
     }
 
     val fakeScope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
-    val fakeTracker = ActiveScreenTrackerFactory.empty()
+    val fakeTracker = ScreenTrackerFactory.empty()
     val fakeAppObserver = AppObserver(
         scope = fakeScope,
         tracker = fakeTracker,
