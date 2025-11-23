@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.mindjourney.core.tracking.model.CoreScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel : ViewModel(), IBaseViewModel {
@@ -13,11 +12,12 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
     abstract val ctx: ViewModelContext
     private var viewModelScope: CoroutineScope = CoroutineScope(Dispatchers.Default)
 
-    private var observerJob: Job? = null
-
     override val isReselectHappened: Boolean
         get() = ctx.screenTracker.reselect.isReselectHappened
 
+    private var baseScreen: CoreScreen = CoreScreen.Unknown
+
+    protected open fun onScreenBecameActive() {}
 
     /** Initialize the ViewModel. Should be called once after creation specific ViewModel.
      *
@@ -26,22 +26,12 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
      */
     protected fun ensureInit(scope: CoroutineScope) {
         val isSimpleViewModel = ctx == null
-        if(isSimpleViewModel){
+        if (isSimpleViewModel) {
             return
         }
-
         viewModelScope = scope
-
-        viewModelScope.launch {
-            ctx.isPrimaryObserverHolder.collectLatest { isPrimary ->
-                if (isPrimary && observerJob == null) {
-                    observerJob = launch {
-                        val source = this::class.simpleName ?: "UnknownViewModel"
-                        TriggerObserverInitializer(ctx, viewModelScope).initObservingTriggersIn(source)
-                    }
-                }
-            }
-        }
+        baseScreen = ctx.screenTracker.activeScreen.value
+        initObservers()
     }
 
     override fun navigateTo(screen: CoreScreen) {
@@ -63,6 +53,29 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
         ctx.isPrimaryObserverHolder.value = true
     }
 
+    private fun initObservers() {
+        viewModelScope.launch {
+            initScreenObserver()
+            initCustomObservers()
+        }
+    }
+
+    private suspend fun initCustomObservers() {
+        ctx.isPrimaryObserverHolder.first { isPrimary -> isPrimary }
+        val source = this::class.simpleName ?: "UnknownViewModel"
+        TriggerObserverInitializer(ctx, viewModelScope).initObservingTriggersIn(source)
+    }
+
+    private suspend fun initScreenObserver() {
+        ctx.screenTracker.state.activeScreen.collect { screen ->
+            if (screen == baseScreen) {
+                onScreenBecameActive()
+            } else {
+                onCleared()
+            }
+        }
+    }
+
     override fun onViewModelReady() {
         //specific ViewModel overrides it
         // default no-op
@@ -70,7 +83,5 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
 
     override fun onCleared() {
         super.onCleared()
-        observerJob?.cancel()
-        observerJob = null
     }
 }
