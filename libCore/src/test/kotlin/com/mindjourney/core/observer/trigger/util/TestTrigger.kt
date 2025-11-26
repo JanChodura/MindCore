@@ -1,10 +1,19 @@
 package com.mindjourney.core.observer.trigger.util
 
-import com.mindjourney.core.observer.trigger.model.IAppTrigger
+import com.mindjourney.core.observer.trigger.ReactiveTrigger
+import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class TestTrigger(
-    private val result: TriggerResult
-) : IAppTrigger {
-    override suspend fun tryExecute(): TriggerResult = result
+) : ReactiveTrigger<Boolean>(
+    reactiveFlow = MutableStateFlow(true),
+    description = TriggerDescription(
+        name = "test",
+    )
+) {
+    override suspend fun tryExecute(): TriggerResult {
+
+        return TriggerResult.Completed(true)
+    }
 }

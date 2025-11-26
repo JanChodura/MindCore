@@ -1,6 +1,5 @@
 package com.mindjourney.core.observer.trigger.util
 
-import com.mindjourney.core.observer.trigger.TriggerPollingManager
 import com.mindjourney.core.observer.trigger.model.IAppTrigger
 import kotlinx.coroutines.test.TestScope
 
