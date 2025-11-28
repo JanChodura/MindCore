@@ -5,6 +5,7 @@ import com.mindjourney.core.tracking.ScreenTracker
 import com.mindjourney.core.tracking.model.CoreScreen
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
+import com.mindjourney.core.util.logging.on
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,7 +14,7 @@ class NavigationCoordinator @Inject constructor(
     private val screenTracker: ScreenTracker,
 ) : NavigationDispatcher {
 
-    private val log = injectedLogger<NavigationCoordinator>(off)
+    private val log = injectedLogger<NavigationCoordinator>(on)
 
     companion object {
         fun empty() = NavigationCoordinator(ScreenTrackerFactory.empty())

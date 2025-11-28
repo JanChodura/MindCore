@@ -26,11 +26,12 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
      * Note: Avoid putting initialization logic in the init block of the ViewModel,
      * as it LEADS to issues with dependency injection frameworks like Hilt.
      */
-    protected fun ensureInit(scope: CoroutineScope) {
+    protected fun ensureInit() {
         val isSimpleViewModel = ctx == null
         if (isSimpleViewModel) {
             return
         }
+
         baseScreen = ctx.screenTracker.activeScreen.value
         initObservers()
     }
