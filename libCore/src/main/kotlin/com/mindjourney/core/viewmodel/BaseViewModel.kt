@@ -12,6 +12,8 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
     abstract val ctx: ViewModelContext
     private var viewModelScope: CoroutineScope = CoroutineScope(Dispatchers.Default)
 
+    protected var isFirstActivation = true
+
     override val isReselectHappened: Boolean
         get() = ctx.screenTracker.reselect.isReselectHappened
 
@@ -29,7 +31,6 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
         if (isSimpleViewModel) {
             return
         }
-        viewModelScope = scope
         baseScreen = ctx.screenTracker.activeScreen.value
         initObservers()
     }
@@ -70,10 +71,9 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
         ctx.screenTracker.state.activeScreen.collect { screen ->
             if (screen == baseScreen) {
                 onScreenBecameActive()
-            } else {
-                onCleared()
             }
         }
+
     }
 
     override fun onViewModelReady() {
