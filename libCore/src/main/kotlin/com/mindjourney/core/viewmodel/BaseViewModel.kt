@@ -3,11 +3,14 @@ package com.mindjourney.core.viewmodel
 import androidx.lifecycle.ViewModel
 import com.mindjourney.core.tracking.model.CoreScreen
 import com.mindjourney.core.viewmodel.helper.INavigationFacade
+import com.mindjourney.core.viewmodel.helper.IReactiveHandler
 import com.mindjourney.core.viewmodel.helper.NavigationFacade
+import com.mindjourney.core.viewmodel.helper.PipelinePhaseEnum
+import com.mindjourney.core.viewmodel.helper.ReactiveHandler
+import com.mindjourney.core.viewmodel.helper.ViewModelContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 abstract class BaseViewModel : ViewModel(), IBaseViewModel {
 
@@ -17,6 +20,8 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
     override val navigationFcd: INavigationFacade by lazy {
         NavigationFacade(ctx)
     }
+
+    protected lateinit var reactiveManager: IReactiveHandler
 
     override val isPrimary = false
     protected var isFirstActivation = true
@@ -36,37 +41,16 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
      * as it LEADS to issues with dependency injection frameworks like Hilt.
      */
     protected fun ensureInit() {
-        val isSimpleViewModel = ctx == null
-        if (isSimpleViewModel) {
-            return
-        }
 
-        baseScreen = ctx.screenTracker.activeScreen.value
-        initObservers()
+        reactiveManager = ReactiveHandler(
+            ctx,
+            viewModelScope,
+            isPrimary,
+            ::onScreenBecameActive,
+            ::onViewModelInitialized
+        )
+        reactiveManager.initialize()
         pipelinePhase.value = PipelinePhaseEnum.PREINITIALIZED
-    }
-
-    private fun initObservers() {
-        viewModelScope.launch {
-            initScreenObserver()
-        }
-        viewModelScope.launch {
-            initCustomObservers()
-        }
-    }
-
-    private fun initCustomObservers() {
-        val source = this::class.simpleName ?: "UnknownViewModel"
-        TriggerObserverInitializer(ctx, viewModelScope, isPrimary).initObservingTriggersIn(source)
-    }
-
-    private suspend fun initScreenObserver() {
-        ctx.screenTracker.state.activeScreen.collect { screen ->
-            if (screen == baseScreen) {
-                onScreenBecameActive()
-            }
-        }
-
     }
 
     override fun onViewModelInitialized() {
@@ -75,6 +59,7 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
     }
 
     override fun onCleared() {
+        reactiveManager.clear()
         super.onCleared()
     }
 }
