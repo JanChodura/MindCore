@@ -2,6 +2,8 @@ package com.mindjourney.core.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.mindjourney.core.tracking.model.CoreScreen
+import com.mindjourney.core.viewmodel.helper.INavigationFacade
+import com.mindjourney.core.viewmodel.helper.NavigationFacade
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +13,10 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
 
     abstract val ctx: ViewModelContext
     private var viewModelScope: CoroutineScope = CoroutineScope(Dispatchers.Default)
+
+    override val navigationFcd: INavigationFacade by lazy {
+        NavigationFacade(ctx)
+    }
 
     override val isPrimary = false
     protected var isFirstActivation = true
@@ -39,21 +45,6 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
         initObservers()
         pipelinePhase.value = PipelinePhaseEnum.PREINITIALIZED
     }
-
-    override fun navigateTo(screen: CoreScreen) {
-        ctx.navigation.goTo(screen)
-    }
-
-    override fun navigateBack(screen: CoreScreen) {
-        ctx.navigation.goBackTo(screen)
-    }
-
-    override fun navigateBack() {
-        ctx.navigation.goBack()
-    }
-
-    override fun isActiveScreen(screen: CoreScreen) =
-        ctx.screenTracker.activeScreen.value == screen
 
     private fun initObservers() {
         viewModelScope.launch {

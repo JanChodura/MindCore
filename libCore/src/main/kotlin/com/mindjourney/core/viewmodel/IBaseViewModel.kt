@@ -1,6 +1,7 @@
 package com.mindjourney.core.viewmodel
 
 import com.mindjourney.core.tracking.model.CoreScreen
+import com.mindjourney.core.viewmodel.helper.INavigationFacade
 
 interface IBaseViewModel {
 
@@ -12,18 +13,7 @@ interface IBaseViewModel {
      */
     val isPrimary: Boolean
 
-    /**
-     * Navigates forward to the given screen.
-     */
-    fun navigateTo(screen: CoreScreen)
-
-    /**
-     * Navigates back - to the explicitly given screen.
-     */
-    fun navigateBack(screen: CoreScreen)
-    fun navigateBack()
-
-    fun isActiveScreen(screen: CoreScreen): Boolean
+    val navigationFcd: INavigationFacade
 
     /**
      * Called when the ViewModel is fully ready for interaction.
