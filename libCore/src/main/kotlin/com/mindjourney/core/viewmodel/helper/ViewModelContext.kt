@@ -1,11 +1,9 @@
-package com.mindjourney.core.viewmodel
+package com.mindjourney.core.viewmodel.helper
 
 import com.mindjourney.core.navigation.NavigationDispatcher
 import com.mindjourney.core.observer.AppObserver
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.tracking.ScreenTracker
-import com.mindjourney.core.util.logging.ILogger
-import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Singleton
 
 /**

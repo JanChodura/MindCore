@@ -1,4 +1,4 @@
-package com.mindjourney.core.viewmodel
+package com.mindjourney.core.viewmodel.helper
 
 import com.mindjourney.core.observer.trigger.TriggerPoll
 import com.mindjourney.core.util.logging.injectedLogger

@@ -6,6 +6,7 @@ import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
 import com.mindjourney.core.tracking.ScreenTrackerFactory
 import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.LogDebugSwitch
+import com.mindjourney.core.viewmodel.helper.ViewModelContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

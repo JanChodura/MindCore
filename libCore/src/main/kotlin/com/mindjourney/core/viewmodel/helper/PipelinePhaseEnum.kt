@@ -1,4 +1,4 @@
-package com.mindjourney.core.viewmodel
+package com.mindjourney.core.viewmodel.helper
 
 enum class PipelinePhaseEnum {
     NOT_STARTED,
