@@ -15,11 +15,6 @@ import javax.inject.Singleton
  */
 @Singleton
 class ViewModelContext(
-    /**
-     * Indicates whether this ViewModelContext is currently designated as the primary observer holder.
-     * ViewModel can call setAsPrimary() to start observing triggers.
-     */
-    val isPrimaryObserverHolder: MutableStateFlow<Boolean> = MutableStateFlow(false),
     val navigation: NavigationDispatcher,
     val screenTracker: ScreenTracker,
     val observer: AppObserver,

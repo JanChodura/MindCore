@@ -1,6 +1,5 @@
 package com.mindjourney.core.viewmodel
 
-import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.TriggerPoll
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
@@ -13,7 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 class TriggerObserverInitializer(
     private val ctx: ViewModelContext,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    private val isPrimary: Boolean
 ) {
 
     private val log = injectedLogger<TriggerObserverInitializer>(off)
@@ -23,8 +23,7 @@ class TriggerObserverInitializer(
      */
     fun initObservingTriggersIn(source: String) {
         setupTriggerPolls(source)
-        val activePrimaries = detectPrimaryVMHolders()
-        initObserverForPrimaryVM(activePrimaries)
+        initObserverForPrimaryVM()
     }
 
     // --- private helpers ---
@@ -40,30 +39,11 @@ class TriggerObserverInitializer(
         }
     }
 
-    private fun detectPrimaryVMHolders(): List<BaseViewModel> {
-        val allHolders = ctx.triggersContext.mapNotNull { it.trigger as? BaseViewModel? }
-        val activePrimaries = allHolders.filter { it.ctx.isPrimaryObserverHolder.value }
-        return activePrimaries
-    }
+    private fun initObserverForPrimaryVM() {
 
-    private fun initObserverForPrimaryVM(activePrimaries: List<BaseViewModel>) {
-        when {
-            activePrimaries.size > 1 -> {
-                log.e(
-                    "Multiple primary ViewModels detected: ${activePrimaries.map { it::class.simpleName }}",
-                    null
-                )
-            }
+        if (isPrimary) {
+            ctx.observer.init(MutableStateFlow(ctx.triggersContext))
 
-            activePrimaries.size == 1 -> {
-                log.d("Starting observer only for primary ViewModel: ${activePrimaries.first()::class.simpleName}")
-                ctx.observer.init(MutableStateFlow(ctx.triggersContext))
-            }
-
-            else -> {
-                log.d("No primary ViewModel marked, initializing observer for all contexts")
-                ctx.observer.init(MutableStateFlow(ctx.triggersContext))
-            }
         }
     }
 }
