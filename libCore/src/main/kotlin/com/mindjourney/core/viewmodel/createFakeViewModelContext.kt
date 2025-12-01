@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-fun FakeViewModelContext(): ViewModelContext {
+fun createFakeViewModelContext(): ViewModelContext {
 
     val fakeLogger = object : ILogger {
         override fun d(tag: String, message: String, switch: LogDebugSwitch) {}
