@@ -30,19 +30,6 @@ interface IBaseViewModel {
     val isReselectHappened: Boolean
 
     /**
-     * Whether this ViewModel instance is currently the primary observer holder.
-     *
-     * Only the primary ViewModel:
-     * - starts observing triggers
-     * - reacts to global lifecycle conditions
-     * - owns reaction pipelines
-     *
-     * This avoids duplicate collectors when multiple ViewModels exist
-     * inside the same navigation host.
-     */
-    val isPrimary: Boolean
-
-    /**
      * Navigation façade providing high-level navigation commands.
      * ViewModel never calls NavigationDispatcher directly.
      */

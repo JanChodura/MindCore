@@ -23,7 +23,6 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
 
     protected lateinit var reactiveManager: IReactiveHandler
 
-    override val isPrimary = false
     protected var isFirstActivation = true
 
     override val isReselectHappened: Boolean
@@ -45,7 +44,6 @@ abstract class BaseViewModel : ViewModel(), IBaseViewModel {
         reactiveManager = ReactiveHandler(
             ctx,
             viewModelScope,
-            isPrimary,
             ::onScreenBecameActive,
             ::onViewModelInitialized
         )

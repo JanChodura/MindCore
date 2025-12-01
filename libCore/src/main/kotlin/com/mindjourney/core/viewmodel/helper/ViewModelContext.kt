@@ -14,6 +14,18 @@ import javax.inject.Singleton
 @Singleton
 class ViewModelContext(
     val navigation: NavigationDispatcher,
+    /**
+     * Whether this ViewModel instance is currently the primary observer holder.
+     *
+     * Only the primary ViewModel:
+     * - starts observing triggers
+     * - reacts to global lifecycle conditions
+     * - owns reaction pipelines
+     *
+     * This avoids duplicate collectors when multiple ViewModels exist
+     * inside the same navigation host.
+     */
+    var isPrimary: Boolean,
     val screenTracker: ScreenTracker,
     val observer: AppObserver,
     val triggersContext: List<TriggerContext>

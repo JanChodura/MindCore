@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class TriggerObserverInitializer(
     private val ctx: ViewModelContext,
     private val scope: CoroutineScope,
-    private val isPrimary: Boolean
 ) {
 
     private val log = injectedLogger<TriggerObserverInitializer>(off)
@@ -41,7 +40,7 @@ class TriggerObserverInitializer(
 
     private fun initObserverForPrimaryVM() {
 
-        if (isPrimary) {
+        if (ctx.isPrimary) {
             ctx.observer.init(MutableStateFlow(ctx.triggersContext))
 
         }

@@ -12,7 +12,6 @@ import kotlin.reflect.KClass
 open class ReactiveHandler(
     private val ctx: ViewModelContext,
     protected val scope: CoroutineScope,
-    private val isPrimary: Boolean,
     private val onScreenActive: () -> Unit,
     private val onReady: () -> Unit,
 ) : IReactiveHandler {
@@ -78,7 +77,6 @@ open class ReactiveHandler(
         val initializer = TriggerObserverInitializer(
             ctx = ctx,
             scope = scope,
-            isPrimary = isPrimary
         )
 
         initializer.initObservingTriggersIn(source)

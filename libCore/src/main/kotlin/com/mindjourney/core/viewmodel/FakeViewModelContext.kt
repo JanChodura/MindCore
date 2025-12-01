@@ -31,6 +31,7 @@ fun FakeViewModelContext(): ViewModelContext {
 
     val fakeCtx = ViewModelContext(
         navigation = fakeNavigation,
+        isPrimary = false,
         screenTracker = fakeTracker,
         observer = fakeAppObserver,
         triggersContext = emptyList()
