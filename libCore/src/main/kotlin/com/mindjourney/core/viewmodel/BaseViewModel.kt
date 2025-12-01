@@ -23,10 +23,6 @@ abstract class BaseViewModel(
     override val isReselectHappened: Boolean
         get() = ctx.screenTracker.reselect.isReselectHappened
 
-    private var baseScreen: CoreScreen = CoreScreen.Unknown
-
-    protected val pipelinePhase = MutableStateFlow(PipelinePhaseEnum.NOT_STARTED)
-
     protected open fun onScreenBecameActive() {}
 
     /** Initialize the ViewModel. Should be called once after creation specific ViewModel.
@@ -43,7 +39,6 @@ abstract class BaseViewModel(
             ::onViewModelInitialized
         )
         reactiveManager.initialize()
-        pipelinePhase.value = PipelinePhaseEnum.PREINITIALIZED
     }
 
     override fun onViewModelInitialized() {
