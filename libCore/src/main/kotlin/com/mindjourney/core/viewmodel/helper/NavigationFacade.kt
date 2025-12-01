@@ -1,8 +1,11 @@
 package com.mindjourney.core.viewmodel.helper
 
 import com.mindjourney.core.tracking.model.CoreScreen
+import dagger.hilt.android.scopes.ViewModelScoped
+import jakarta.inject.Inject
 
-class NavigationFacade(
+@ViewModelScoped
+class NavigationFacade @Inject constructor(
     private val ctx: ViewModelContext
 ): INavigationFacade {
 

@@ -2,6 +2,7 @@ package com.mindjourney.core.viewmodel.helper
 
 import com.mindjourney.core.observer.trigger.model.IAppTrigger
 import kotlin.reflect.KClass
+
 /**
  * Manages reactive observers associated with a ViewModel.
  *
