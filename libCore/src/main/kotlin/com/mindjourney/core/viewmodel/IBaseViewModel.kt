@@ -1,24 +1,64 @@
 package com.mindjourney.core.viewmodel
 
-import com.mindjourney.core.tracking.model.CoreScreen
 import com.mindjourney.core.viewmodel.helper.INavigationFacade
 
+/**
+ * Base interface for all ViewModels in the app.
+ *
+ * ViewModel in this architecture is not just a passive data holder.
+ * It acts as a **reaction layer** between the UI world (screen changes,
+ * readiness signals, triggers, navigation events) and the domain orchestrators.
+ *
+ * Responsibilities of ViewModel:
+ * - Listens to screen lifecycle (via ViewModelContext & ScreenTracker)
+ * - Controls ownership of observer subscriptions (`isPrimary`)
+ * - Initializes trigger observers and other reactive components
+ * - Exposes navigation through a façade (`navigationFcd`)
+ * - Provides a safe point (`onViewModelInitialized`) where all reactive
+ *   dependencies are ready and domain orchestrators can be called
+ *
+ * ViewModel **does not contain domain logic**.
+ * Domain operations are delegated to orchestrators.
+ */
 interface IBaseViewModel {
 
+    /**
+     * True when the current screen has been reselected.
+     * Used by ViewModel to react appropriately (e.g. scroll-to-top,
+     * reset pager, refresh entries).
+     */
     val isReselectHappened: Boolean
 
     /**
-     * Indicates whether this ViewModelContext is currently designated as the primary observer holder.
-     * ViewModel can call setAsPrimary() to start observing triggers.
+     * Whether this ViewModel instance is currently the primary observer holder.
+     *
+     * Only the primary ViewModel:
+     * - starts observing triggers
+     * - reacts to global lifecycle conditions
+     * - owns reaction pipelines
+     *
+     * This avoids duplicate collectors when multiple ViewModels exist
+     * inside the same navigation host.
      */
     val isPrimary: Boolean
 
+    /**
+     * Navigation façade providing high-level navigation commands.
+     * ViewModel never calls NavigationDispatcher directly.
+     */
     val navigationFcd: INavigationFacade
 
     /**
      * Called when the ViewModel is fully ready for interaction.
-     * Override this method to perform any setup that requires the ViewModel to be fully initialized.
-     * For example it waits for initialization of trigger observers.
+     *
+     * This moment occurs only after:
+     * - the ViewModelContext is attached,
+     * - primary status is resolved,
+     * - trigger observers are initialized,
+     * - screen observers are active.
+     *
+     * Override this method to start domain orchestration or to run
+     * any initialization that requires all reactive layers to be ready.
      */
     fun onViewModelInitialized()
 }
