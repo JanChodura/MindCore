@@ -1,41 +1,40 @@
 package com.mindjourney.core.observer.trigger
 
-import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.observer.trigger.model.TriggerResult
 import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.off
 import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
- * Central manager responsible for coordinating both polling and reactive triggers.
- * It decides how to start each trigger type, attaches configuration,
- * and manages their coroutine jobs and results.
+ * Coordinates trigger lifecycle at application level.
+ *
+ * Responsible for:
+ *  - storing registered triggers,
+ *  - initiating their execution via [TriggersLauncher],
+ *  - exposing a unified result stream via [triggerResult].
+ *
+ * Business logic remains inside individual triggers; this class
+ * manages orchestration and result propagation.
  */
 class TriggerManager(
     private val scope: CoroutineScope,
 ) {
 
     private val log = injectedLogger<TriggerManager>(on)
-    private val activeJobs = mutableListOf<Job>()
     private val triggers: MutableList<TriggerContext> = mutableListOf()
 
     private val _triggerResult = MutableStateFlow<TriggerResult>(TriggerResult.None)
     val triggerResult: StateFlow<TriggerResult> = _triggerResult
 
-    private val reactiveJobs = mutableListOf<Job>()
     private val triggersLauncher = TriggersLauncher(
-        cancelExistingJobs = { cancelExistingJobs() },
         startTrigger = { triggerSelector.init(it) },
         getAllTriggers = { triggers },
-        getReactiveJobs = { reactiveJobs }
     )
 
     private val triggerSelector = TriggerInitializer(scope) { result ->
@@ -53,12 +52,6 @@ class TriggerManager(
         triggersLauncher.launchAll()
     }
 
-    /** Cancels all running jobs. */
-    fun cancelExistingJobs() {
-        log.d("Cancelling ${activeJobs.size} existing trigger jobs")
-        activeJobs.forEach { it.cancel() }
-        activeJobs.clear()
-    }
 
     /** Determines trigger type and starts appropriate observation logic. */
 

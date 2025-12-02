@@ -2,6 +2,16 @@ package com.mindjourney.core.observer.trigger.model
 
 import com.mindjourney.core.tracking.model.CoreScreen
 
+/**
+ * Represents the outcome produced by a trigger evaluation.
+ *
+ * A trigger may:
+ *  - return [None] when no action is needed, or
+ *  - emit one of several meaningful effects for UI or application logic.
+ *
+ * Each result type acts as a lightweight command or intent to be
+ * interpreted by the orchestration layer or application code.
+ */
 sealed class TriggerResult {
 
     data object None : TriggerResult()

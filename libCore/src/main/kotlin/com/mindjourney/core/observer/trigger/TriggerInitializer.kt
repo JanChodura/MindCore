@@ -1,22 +1,31 @@
 package com.mindjourney.core.observer.trigger
 
 import com.mindjourney.common.BuildConfig
-import com.mindjourney.core.observer.trigger.model.PollingTrigger
+import com.mindjourney.core.observer.trigger.model.IAppTrigger
+import com.mindjourney.core.observer.trigger.model.IPollingTrigger
 import com.mindjourney.core.observer.trigger.model.IReactiveTrigger
+import com.mindjourney.core.observer.trigger.model.PollConfig
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
- * Initializes and starts appropriate trigger type (Polling or Reactive)
- * based on TriggerContext.
+ * Orchestration entry point responsible for wiring a trigger into execution.
  *
- * The class separates initialization logic into dedicated methods
- * for better readability and testability.
+ * It:
+ *  - configures polling flows when needed,
+ *  - starts reactive triggers,
+ *  - bridges results back to the consumer layer.
+ *
+ * This class does not implement trigger logic itself — it simply binds
+ * the trigger instance to its execution mechanism.
  */
+
 class TriggerInitializer(
     private val scope: CoroutineScope,
     private val onResult: (TriggerResult) -> Unit
@@ -26,9 +35,9 @@ class TriggerInitializer(
 
     /** Entry point – determines and initializes the correct trigger type. */
     fun init(context: TriggerContext) {
-        val (description, trigger, triggerPoll) = context
-        when (trigger) {
-            is PollingTrigger -> initPollingTrigger(triggerPoll, description, context, trigger)
+        val description = context.description
+        when (val trigger = context.trigger) {
+            is IPollingTrigger -> initPollingTrigger( context, trigger)
             is IReactiveTrigger -> initReactiveTrigger(description, trigger)
             else -> log.w("Trigger:$description does not implement PollingTrigger or ReactiveTrigger")
         }
@@ -36,20 +45,24 @@ class TriggerInitializer(
 
     /** Initializes and starts a PollingTrigger. */
     private fun initPollingTrigger(
-        triggerPoll: TriggerPoll,
-        description: TriggerDescription,
         context: TriggerContext,
-        trigger: PollingTrigger
-    ): PollingTrigger {
-        log.d("Initializing PollingTrigger: $description")
-        attachPollProperties(triggerPoll, description, context)
+        trigger: IPollingTrigger
+    ) {
+        val ticks = TriggerPoll.createTickStream(
+                scope,
+            PollConfig(
+                cycles = context.pollCycles ?: PollConfig.DEFAULT.cycles,
+                intervalSec = context.pollIntervalSec ?: PollConfig.DEFAULT.intervalSec
+            ),
+        context.description
+        )
 
-        log.d("Starting PollingTrigger: $description")
-        triggerPoll.start()
-        trigger.startPollingObservation(scope, description, triggerPoll) { result ->
-            if (result !is TriggerResult.None) onResult(result)
+        scope.launch {
+            ticks.collectLatest {
+                val result = trigger.tryExecute()
+                if (result !is TriggerResult.None) onResult(result)
+            }
         }
-        return trigger
     }
 
     /** Initializes and starts a ReactiveTrigger. */
@@ -62,17 +75,5 @@ class TriggerInitializer(
             if (result !is TriggerResult.None) onResult(result)
         }
         return trigger
-    }
-
-    /** Configures polling parameters before start. */
-    private fun attachPollProperties(
-        triggerPoll: TriggerPoll,
-        description: TriggerDescription,
-        context: TriggerContext
-    ) {
-        triggerPoll.attachDescription(description)
-        triggerPoll.attachScope(scope)
-        triggerPoll.attachCycles(context.pollCycles ?: BuildConfig.POLL_CYCLES)
-        triggerPoll.attachInterval(context.pollIntervalSec ?: BuildConfig.POLL_INTERVAL_SEC)
     }
 }

@@ -1,19 +1,34 @@
 package com.mindjourney.core.observer.trigger.model
 
 /**
-* Represents a reactive trigger which emits results based on
-* reactive data flows (e.g., Flow, LiveData, external event streams).
-*/
+ * Specialization of [IAppTrigger] for triggers driven by reactive data streams.
+ *
+ * A reactive trigger does not decide when it evaluates — instead,
+ * it listens to an upstream event source (Flow, LiveData, external updates)
+ * and executes its logic whenever new data arrives.
+ *
+ * This makes it suitable for:
+ *  - observing domain/state change streams
+ *  - reacting to repository or system notifications
+ *  - UI / lifecycle / push events
+ *
+ * Unlike polling triggers, reactive triggers never schedule themselves —
+ * they only bind to an external stream and let it drive evaluation.
+ */
 interface IReactiveTrigger : IAppTrigger {
 
     /**
-     * Starts a reactive flow observation.
-     * Implementations should collect from their respective data sources
-     * and call [onResult] when a condition is met.
+     * Starts observing the underlying reactive source.
      *
-     * @param scope The coroutine scope used for reactive observation.
-     * @param description Name of the trigger for logging/debugging.
-     * @param onResult Callback for publishing [TriggerResult] events.
+     * Concrete implementations:
+     *  - subscribe to the stream
+     *  - wait for incoming events
+     *  - invoke [tryExecute] on each emission
+     *  - forward non-empty [TriggerResult] values to `onResult`
+     *
+     * @param scope Coroutine scope driving observation.
+     * @param description Human-readable metadata for logging and debugging.
+     * @param onResult Callback receiving meaningful trigger output.
      */
     fun startReactiveFlow(
         scope: kotlinx.coroutines.CoroutineScope,

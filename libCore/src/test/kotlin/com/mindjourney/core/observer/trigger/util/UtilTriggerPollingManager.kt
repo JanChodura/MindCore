@@ -18,7 +18,6 @@ object UtilTriggerPollingManager {
     ): TriggerPoll {
 
         val context = UtilTriggerContext.createSimpleTriggerContext(
-            event = "testEvent",
             trigger = trigger,
             scope = scope
         )

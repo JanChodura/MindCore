@@ -5,7 +5,10 @@ import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import java.time.LocalTime
 
 /**
- * Factory for creating before start of poll and updating Tick instances during polling.
+ * Utility for constructing and evolving [Tick] instances during polling.
+ *
+ * Centralizes timestamping and cycle progression so tick creation remains
+ * consistent across the polling flow.
  */
 object TickFactory {
     fun empty() = Tick(TriggerDescription.empty(), 0, LocalTime.now(), isFinal = false)

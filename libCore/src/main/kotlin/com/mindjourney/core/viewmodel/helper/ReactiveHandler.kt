@@ -76,7 +76,6 @@ open class ReactiveHandler(
 
         val initializer = ViewModelTriggerSystemInitializer(
             ctx = ctx,
-            scope = scope,
         )
 
         initializer.initObservingTriggersIn(source)

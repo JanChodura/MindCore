@@ -1,29 +1,23 @@
 package com.mindjourney.core.observer.trigger
 
-import com.mindjourney.core.logger.LoggerProvider
-import com.mindjourney.core.observer.trigger.model.PollingTrigger
+import com.mindjourney.core.observer.trigger.model.IPollingTrigger
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
-import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.Job
 
 /**
- * Coordinates the initialization and launch of both polling and reactive triggers.
+ * Launches triggers using simple orchestration rules:
  *
- * This class is responsible for:
- * - Cancelling any previously running trigger jobs.
- * - Splitting the trigger list into polling and reactive types.
- * - Launching each trigger type with proper scoping and logging.
+ *  - polling triggers are always restarted,
+ *  - reactive triggers are started only once.
  *
- * Reactive triggers are started only once to avoid duplicate listeners,
- * while polling triggers are restarted every time a screen or context changes.
+ * It delegates execution to [TriggerInitializer] rather than running logic itself.
  */
+
 class TriggersLauncher(
-    private val cancelExistingJobs: () -> Unit,
     private val startTrigger: (TriggerContext) -> Unit,
     private val getAllTriggers: () -> List<TriggerContext>,
-    private val getReactiveJobs: () -> List<Job>
 ) {
 
     private val log = injectedLogger<TriggersLauncher>(off)
@@ -34,17 +28,10 @@ class TriggersLauncher(
      * and launches triggers according to their type.
      */
     fun launchAll() {
-        cancelRunningJobs()
         val (polling, reactive) = splitTriggersByType()
         logTriggerCounts(polling.size, reactive.size)
         launchPollingTriggers(polling)
-        launchReactiveTriggersOnce(reactive)
-    }
-
-    /** Cancels all currently active trigger jobs before restarting them. */
-    private fun cancelRunningJobs() {
-        log.d("Cancelling existing trigger jobs before relaunch")
-        cancelExistingJobs()
+        launchReactiveTriggers(reactive)
     }
 
     /**
@@ -53,7 +40,7 @@ class TriggersLauncher(
      */
     private fun splitTriggersByType(): Pair<List<TriggerContext>, List<TriggerContext>> {
         val triggers = getAllTriggers()
-        val (polling, reactive) = triggers.partition { it.trigger is PollingTrigger }
+        val (polling, reactive) = triggers.partition { it.trigger is IPollingTrigger }
         return polling to reactive
     }
 
@@ -77,13 +64,8 @@ class TriggersLauncher(
      * Launches reactive triggers only if none are already active.
      * Prevents duplicate Flow collectors or multiple reactive subscriptions.
      */
-    private fun launchReactiveTriggersOnce(reactive: List<TriggerContext>) {
-        val activeJobs = getReactiveJobs()
-        if (activeJobs.isEmpty()) {
-            log.d("Launching reactive triggers")
-            reactive.forEach { startTrigger(it) }
-        } else {
-            log.d("Skipping reactive triggers – already active (${activeJobs.size} jobs running)")
-        }
+    private fun launchReactiveTriggers(reactive: List<TriggerContext>) {
+        log.d("Launching reactive triggers...")
+        reactive.forEach { startTrigger(it) }
     }
 }

@@ -42,13 +42,13 @@ class TriggerPollingManagerTest {
     fun triggerResultIsEmittedAfterOneTick() = testScope.runTest {
         // Arrange
         val expectedResult = TriggerResult.ExecuteAction("testAction")
-        val trigger = TestTrigger(expectedResult)
+        val trigger = TestTrigger()
         val manager = UtilTriggerPollingManager.createSimpleManager( testScope, trigger)
-        UtilTriggerReflection.injectSingleTrigger(manager, testScope, trigger)
+
 
 
         // Act + Assert
-        manager.triggerResult
+        trigger
             .drop(1) // Skip initial None
             .test {
                 manager.startPollingForTriggers()

@@ -12,8 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 class ViewModelTriggerSystemInitializer(
     private val ctx: ViewModelContext,
-    private val scope: CoroutineScope,
-) {
+    ) {
 
     private val log = injectedLogger<ViewModelTriggerSystemInitializer>(off)
 
@@ -21,19 +20,14 @@ class ViewModelTriggerSystemInitializer(
      * Public entry point for initializing trigger observation for given ViewModel.
      */
     fun initObservingTriggersIn(source: String) {
-        setupTriggerPolls(source)
+        setupTriggerSources(source)
         initObserverForPrimaryVM()
     }
 
     // --- private helpers ---
 
-    private fun setupTriggerPolls(source: String) {
-
+    private fun setupTriggerSources(source: String) {
         ctx.triggersContext.forEach { triggerContext ->
-            triggerContext.triggerPoll = TriggerPoll(
-                scope = scope,
-                description = triggerContext.description
-            )
             triggerContext.description.source = source
         }
     }

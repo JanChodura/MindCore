@@ -5,14 +5,17 @@ import com.mindjourney.core.observer.trigger.model.IAppTrigger
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 
 /**
- * Represents the context in which a trigger is executed.
+ * Bundles all metadata required to initialize and run a trigger.
  *
- * @property description The name of the event that caused the trigger to execute.
- * @property trigger The trigger instance to be executed.
- * @property triggerPoll Configuration for polling behavior of the trigger.
- *      It needs to be added to a polling manager separately due to unknown scope at this point.
- * @property pollCycles Optional number of polling cycles to perform.
- * @property pollIntervalSec Optional interval in seconds between polling cycles.
+ * This context is consumed by orchestration components, not triggers themselves.
+ * It provides a single place containing:
+ *
+ *  - the trigger instance to evaluate
+ *  - descriptive information for logging and diagnostics
+ *  - optional polling configuration, if the trigger is time-driven
+ *
+ * Reactive triggers ignore polling fields, while polling orchestration
+ * reads `pollCycles` and `pollIntervalSec` to configure the tick stream.
  */
 data class TriggerContext(
     val description: TriggerDescription,
