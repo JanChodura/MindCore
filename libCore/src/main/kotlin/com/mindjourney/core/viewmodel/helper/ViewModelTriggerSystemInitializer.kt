@@ -10,12 +10,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * Handles initialization of trigger observation for a given [ViewModelContext].
  * Ensures proper setup of TriggerPolls and observer activation for primary ViewModels.
  */
-class TriggerObserverInitializer(
+class ViewModelTriggerSystemInitializer(
     private val ctx: ViewModelContext,
     private val scope: CoroutineScope,
 ) {
 
-    private val log = injectedLogger<TriggerObserverInitializer>(off)
+    private val log = injectedLogger<ViewModelTriggerSystemInitializer>(off)
 
     /**
      * Public entry point for initializing trigger observation for given ViewModel.

@@ -74,7 +74,7 @@ open class ReactiveHandler(
     private fun initializeTriggerObserver() {
         val source = this::class.simpleName ?: "UnknownVM"
 
-        val initializer = TriggerObserverInitializer(
+        val initializer = ViewModelTriggerSystemInitializer(
             ctx = ctx,
             scope = scope,
         )

@@ -1,7 +1,7 @@
 package com.mindjourney.core.viewmodel.helper
 
 import com.mindjourney.core.navigation.NavigationDispatcher
-import com.mindjourney.core.observer.AppObserver
+import com.mindjourney.core.observer.IAppScreenObserver
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.tracking.ScreenTracker
 import javax.inject.Singleton
@@ -27,6 +27,6 @@ class ViewModelContext(
      */
     var isPrimary: Boolean,
     val screenTracker: ScreenTracker,
-    val observer: AppObserver,
+    val observer: IAppScreenObserver,
     val triggersContext: List<TriggerContext>
 )

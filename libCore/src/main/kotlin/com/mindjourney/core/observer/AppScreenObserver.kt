@@ -22,17 +22,17 @@ import kotlin.coroutines.EmptyCoroutineContext
  * switches to Convictions screen first page once per day.
  */
 @Singleton
-class AppObserver @Inject constructor(
+class AppScreenObserver @Inject constructor(
     private val scope: CoroutineScope,
     private val tracker: ScreenTracker,
     private val resultConsumer: TriggerResultConsumer,
-) {
+):IAppScreenObserver {
 
-    private val log = injectedLogger<AppObserver>(off)
+    private val log = injectedLogger<AppScreenObserver>(off)
 
     companion object {
         /** Creates an empty/no-op instance of AppObserver for cases where DI is not available like Preview, Tests. */
-        fun empty(): AppObserver = AppObserver(
+        fun empty(): AppScreenObserver = AppScreenObserver(
             CoroutineScope(EmptyCoroutineContext),
             ScreenTrackerFactory.empty(),
             TriggerResultConsumer.empty()
@@ -45,15 +45,15 @@ class AppObserver @Inject constructor(
 
     private var triggersFlow: StateFlow<List<TriggerContext>>? = null
 
-    fun init(triggersFlow: StateFlow<List<TriggerContext>>) {
+    override fun init(triggersFlow: StateFlow<List<TriggerContext>>) {
         this.triggersFlow = triggersFlow
         triggerManager.initTriggers(triggersFlow)
-        launchTriggerManager()
+        observeActiveScreenTransitions()
         triggerManager.observeTriggerResults(resultConsumer)
     }
 
     /** Listens to ScreenTracker and starts evaluation when user changes screen. */
-    private fun launchTriggerManager() {
+    private fun observeActiveScreenTransitions() {
         if (isTrackerObserved) return
         isTrackerObserved = true
 

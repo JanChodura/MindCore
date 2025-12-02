@@ -1,7 +1,7 @@
 package com.mindjourney.core.viewmodel
 
 import com.mindjourney.core.navigation.NavigationCoordinator
-import com.mindjourney.core.observer.AppObserver
+import com.mindjourney.core.observer.AppScreenObserver
 import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
 import com.mindjourney.core.tracking.ScreenTrackerFactory
 import com.mindjourney.core.util.logging.ILogger
@@ -21,7 +21,7 @@ fun createFakeViewModelContext(): ViewModelContext {
 
     val fakeScope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
     val fakeTracker = ScreenTrackerFactory.empty()
-    val fakeAppObserver = AppObserver(
+    val fakeAppScreenObserver = AppScreenObserver(
         scope = fakeScope,
         tracker = fakeTracker,
         resultConsumer = TriggerResultConsumer.empty()
@@ -33,7 +33,7 @@ fun createFakeViewModelContext(): ViewModelContext {
         navigation = fakeNavigation,
         isPrimary = false,
         screenTracker = fakeTracker,
-        observer = fakeAppObserver,
+        observer = fakeAppScreenObserver,
         triggersContext = emptyList()
     )
 
