@@ -5,6 +5,7 @@ plugins {
     kotlin("android")
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.gradlePlugin)
+    alias(libs.plugins.jacoco)
 }
 
 android {
