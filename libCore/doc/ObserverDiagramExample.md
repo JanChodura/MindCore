@@ -45,14 +45,14 @@ ASCII DIAGRAM – UPDATED OBSERVER ARCHITECTURE
     | TriggerPoll.createTickStream |         |     startReactiveFlow()          |
     +----------+-------------------+         | - sets isReady=true on 1st event |
                |                             +-----------------+----------------+
-               |                                               |
+                   |                                           | isReady=true 
                v                                               v
       +--------+--------+                          +-----------+------------+
       | tryExecute()    |                          |     tryExecute()       |
       | (business logic)|                          |  (business logic)      |
       +--------+--------+                          +-----------+------------+
                |                                               |
-               | TriggerResult                                 | TriggerResult(isComplete)
+               | TriggerResult                                 | TriggerResult
                +------------ ------v---------------------------+
                         +----------+-----------+
                         |   TriggerResult      |

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class TestTrigger(
 ) : ReactiveTrigger<Boolean>(
-    reactiveFlow = MutableStateFlow(true),
+    sourceFlow = MutableStateFlow(true),
     description = TriggerDescription(
         name = "test",
     )

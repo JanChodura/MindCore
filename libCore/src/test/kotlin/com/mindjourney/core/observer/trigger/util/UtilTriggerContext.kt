@@ -7,15 +7,20 @@ import kotlinx.coroutines.CoroutineScope
 object UtilTriggerContext {
 
     /**
-     * Creates a basic TriggerContext with a one-shot polling setup for testing.
-     *
-     * @param scope CoroutineScope for the polling.
-     * @param trigger Trigger implementation to execute.
+     * Creates a simple TriggerContext for testing.
+     * No polling config is included unless provided.
      */
     fun createSimpleTriggerContext(
-        scope: CoroutineScope,
         trigger: IAppTrigger,
+        name: String = "testTrigger",
+        pollCycles: Int? = null,
+        pollIntervalSec: Int? = null
     ): TriggerContext {
-        return TriggerContext(TriggerDescription("screenReadiness"), trigger)
+        return TriggerContext(
+            description = TriggerDescription(name),
+            trigger = trigger,
+            pollCycles = pollCycles,
+            pollIntervalSec = pollIntervalSec
+        )
     }
 }

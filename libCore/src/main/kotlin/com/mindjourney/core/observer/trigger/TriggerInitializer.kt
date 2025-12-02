@@ -1,7 +1,6 @@
 package com.mindjourney.core.observer.trigger
 
 import com.mindjourney.common.BuildConfig
-import com.mindjourney.core.observer.trigger.model.IAppTrigger
 import com.mindjourney.core.observer.trigger.model.IPollingTrigger
 import com.mindjourney.core.observer.trigger.model.IReactiveTrigger
 import com.mindjourney.core.observer.trigger.model.PollConfig
@@ -39,7 +38,7 @@ class TriggerInitializer(
         when (val trigger = context.trigger) {
             is IPollingTrigger -> initPollingTrigger( context, trigger)
             is IReactiveTrigger -> initReactiveTrigger(description, trigger)
-            else -> log.w("Trigger:$description does not implement PollingTrigger or ReactiveTrigger")
+            else -> log.w("Trigger:$description does not implement IPollingTrigger or IReactiveTrigger")
         }
     }
 
@@ -48,7 +47,7 @@ class TriggerInitializer(
         context: TriggerContext,
         trigger: IPollingTrigger
     ) {
-        val ticks = TriggerPoll.createTickStream(
+        val tickStream = TriggerPoll.createTickStream(
                 scope,
             PollConfig(
                 cycles = context.pollCycles ?: PollConfig.DEFAULT.cycles,
@@ -57,8 +56,9 @@ class TriggerInitializer(
         context.description
         )
 
+        println("ticks: ${tickStream.value}")
         scope.launch {
-            ticks.collectLatest {
+            tickStream.collectLatest {
                 val result = trigger.tryExecute()
                 if (result !is TriggerResult.None) onResult(result)
             }

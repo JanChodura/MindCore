@@ -1,6 +1,5 @@
 package com.mindjourney.core.observer.trigger.util
 
-import com.mindjourney.core.observer.trigger.TriggerPoll
 import com.mindjourney.core.observer.trigger.model.IAppTrigger
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 
@@ -20,7 +19,6 @@ import com.mindjourney.core.observer.trigger.model.TriggerDescription
 data class TriggerContext(
     val description: TriggerDescription,
     val trigger: IAppTrigger,
-    var triggerPoll: TriggerPoll = TriggerPoll.empty(),
     val pollCycles: Int? = null,
     val pollIntervalSec: Int? = null
 )

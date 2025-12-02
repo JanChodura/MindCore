@@ -1,34 +1,38 @@
 package com.mindjourney.core.observer.trigger.util
 
-import com.mindjourney.core.observer.trigger.TriggerPoll
+import com.mindjourney.core.observer.trigger.TriggerManager
 import com.mindjourney.core.observer.trigger.model.IAppTrigger
-import com.mindjourney.core.observer.trigger.model.TriggerDescription
+import com.mindjourney.core.observer.trigger.util.TriggerContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 
-object UtilTriggerPollingManager {
+object UtilTriggerManager {
 
-    /**
-     * Creates a TriggerPollingManager with a single simple TriggerContext.
-     *
-     * @param trigger The trigger to use for this single test context.
-     */
-    fun createSimpleManager(
-        scope: TestScope,
-        trigger: IAppTrigger
-    ): TriggerPoll {
+    fun createWithContexts(
+        testScope: TestScope,
+        contexts: List<TriggerContext>
+    ): TriggerManager {
 
-        val context = UtilTriggerContext.createSimpleTriggerContext(
-            trigger = trigger,
-            scope = scope
-        )
+        val dispatcher = StandardTestDispatcher(testScope.testScheduler)
+        val scope = CoroutineScope(dispatcher)
+        val manager = TriggerManager(scope)
 
-        return TriggerPoll(scope, TriggerDescription()).apply {
+        val flow = MutableStateFlow(contexts)
 
-            val field = TriggerPoll::class.java.getDeclaredField("triggers")
-            field.isAccessible = true
-            field.set(this, listOf(context))
-        }
+        manager.initTriggers(flow)
+
+        return manager
     }
 
-
+    fun createWithSingleTrigger(
+        scope: TestScope,
+        trigger: IAppTrigger
+    ): TriggerManager {
+        val context = UtilTriggerContext.createSimpleTriggerContext(trigger)
+        return createWithContexts(scope, listOf(context))
+    }
 }

@@ -6,7 +6,8 @@ import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -29,8 +30,11 @@ class TriggerManager(
     private val log = injectedLogger<TriggerManager>(on)
     private val triggers: MutableList<TriggerContext> = mutableListOf()
 
-    private val _triggerResult = MutableStateFlow<TriggerResult>(TriggerResult.None)
-    val triggerResult: StateFlow<TriggerResult> = _triggerResult
+    private val _triggerResult = MutableSharedFlow<TriggerResult>(
+        replay = 0,
+        extraBufferCapacity = 16
+    )
+    val triggerResult: SharedFlow<TriggerResult> = _triggerResult
 
     private val triggersLauncher = TriggersLauncher(
         startTrigger = { triggerSelector.init(it) },
@@ -38,7 +42,9 @@ class TriggerManager(
     )
 
     private val triggerSelector = TriggerInitializer(scope) { result ->
-        if (result !is TriggerResult.None) _triggerResult.value = result
+        scope.launch {
+            _triggerResult.emit(result)
+        }
     }
 
     /** Initializes triggers*/

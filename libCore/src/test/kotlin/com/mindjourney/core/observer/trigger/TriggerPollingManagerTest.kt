@@ -2,12 +2,8 @@ package com.mindjourney.core.observer.trigger
 
 import app.cash.turbine.test
 import com.mindjourney.core.observer.trigger.model.TriggerResult
-import com.mindjourney.core.observer.trigger.util.TestTrigger
-import com.mindjourney.core.observer.trigger.util.UtilTriggerContext
-import com.mindjourney.core.observer.trigger.util.UtilTriggerPollingManager
-import com.mindjourney.core.observer.trigger.util.UtilTriggerReflection
-import com.mindjourney.core.util.logging.ILogger
-import com.mindjourney.core.util.logging.TestLogger
+import com.mindjourney.core.observer.trigger.util.SimplePollingTestTrigger
+import com.mindjourney.core.observer.trigger.util.UtilTriggerManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.drop
@@ -42,16 +38,17 @@ class TriggerPollingManagerTest {
     fun triggerResultIsEmittedAfterOneTick() = testScope.runTest {
         // Arrange
         val expectedResult = TriggerResult.ExecuteAction("testAction")
-        val trigger = TestTrigger()
-        val manager = UtilTriggerPollingManager.createSimpleManager( testScope, trigger)
+        val trigger = SimplePollingTestTrigger(expectedResult)
+
+        // Act - starts polling flow
+        val manager = UtilTriggerManager.createWithSingleTrigger(testScope, trigger)
 
 
-
-        // Act + Assert
-        trigger
+        // Assert
+        manager.triggerResult
             .drop(1) // Skip initial None
             .test {
-                manager.startPollingForTriggers()
+                manager.startAllTriggers()
                 advanceTimeBy(2000)
                 val result = awaitItem()
                 assertEquals(expectedResult, result)
