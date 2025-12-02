@@ -3,17 +3,16 @@ package com.mindjourney.core.observer.trigger.model
 /**
  * Specialization of [IAppTrigger] for triggers driven by reactive data streams.
  *
- * A reactive trigger does not decide when it evaluates — instead,
- * it listens to an upstream event source (Flow, LiveData, external updates)
- * and executes its logic whenever new data arrives.
+ * A reactive trigger does not emit its result directly into TriggerManager.
+ * Instead, every non-empty TriggerResult is forwarded through a callback
+ * provided by TriggerInitializer.
  *
- * This makes it suitable for:
- *  - observing domain/state change streams
- *  - reacting to repository or system notifications
- *  - UI / lifecycle / push events
- *
- * Unlike polling triggers, reactive triggers never schedule themselves —
- * they only bind to an external stream and let it drive evaluation.
+ * This means:
+ * - the trigger is driven purely by upstream Flow emissions,
+ * - each emission invokes tryExecute(),
+ * - any meaningful TriggerResult is delivered via `onResult(result)`,
+ * - result propagation requires an active TriggerResultConsumer,
+ *   otherwise the emitted result will not reach the manager.
  */
 interface IReactiveTrigger : IAppTrigger {
 

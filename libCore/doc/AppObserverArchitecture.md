@@ -73,11 +73,20 @@ Determines how each trigger is executed:
 - If trigger is IPollingTrigger:
   createTickStream()
   collectLatest { trigger.tryExecute() }
+  (polling triggers return results directly to TriggerManager)
 
 - If trigger is IReactiveTrigger:
-  trigger.startReactiveFlow(scope, description, onResult)
+  startReactiveFlow() is attached and the trigger forwards each
+  non-None TriggerResult through an `onResult(result)` callback.
 
-TriggerInitializer is the only place that subscribes to flows.
+For reactive triggers:
+- TriggerInitializer wraps the callback into `scope.launch { _triggerResult.emit(result) }`,
+- result delivery is asynchronous,
+- a TriggerResultConsumer must be observing results, otherwise
+  emitted values will not reach TriggerManager’s output stream.
+
+TriggerInitializer is the only place that subscribes to flows and
+bridges reactive trigger results back to TriggerManager.
 
 
 6. TriggerPoll (Tick stream generator – cleaned version)

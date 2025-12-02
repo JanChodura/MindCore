@@ -46,14 +46,14 @@ ASCII DIAGRAM – UPDATED OBSERVER ARCHITECTURE
     +----------+-------------------+         | - sets isReady=true on 1st event |
                |                             +-----------------+----------------+
                    |                                           | isReady=true 
-               v                                               v
-      +--------+--------+                          +-----------+------------+
-      | tryExecute()    |                          |     tryExecute()       |
-      | (business logic)|                          |  (business logic)      |
-      +--------+--------+                          +-----------+------------+
+               v                                               v onResult(callback)
+      +--------+--------+                     +----------------+--------------+
+      | tryExecute()    |                     |        tryExecute()           |
+      | (business logic)|                     |  (business logic in callback) |
+      +--------+--------+                     +----------------+--------------+
                |                                               |
-               | TriggerResult                                 | TriggerResult
-               +------------ ------v---------------------------+
+               | TriggerResult                                 | TriggerResult (non-None only)
+               +------------ ------v---------------------------+   forwarded via callback
                         +----------+-----------+
                         |   TriggerResult      |
                         +----------+-----------+
@@ -116,6 +116,9 @@ NOTES
 =====
 - Polling triggers are driven by Tick(cycle, intervalSec).
 - Reactive triggers are driven by sourceFlow events.
-- ReactiveTrigger.ready == true means: "trigger has already received first event".
-- Many reactive triggers use isReady only (ready signal) without emitting any TriggerResult.
-- Both trigger types share tryExecute() contract.
+- Reactive triggers do NOT emit results directly; instead they forward
+  non-None TriggerResult values through a callback installed by TriggerInitializer.
+- Delivery of reactive trigger results requires an active TriggerResultConsumer.
+  Without a consumer, emitted results will not propagate to the manager.
+- ReactiveTrigger.isReady == true means "at least one event was received".
+- Many reactive triggers use isReady only (ready signal) without emitting a result.

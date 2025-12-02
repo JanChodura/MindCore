@@ -2,7 +2,6 @@ package com.mindjourney.core.observer.trigger.util
 
 import com.mindjourney.core.observer.trigger.model.IAppTrigger
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
-import kotlinx.coroutines.CoroutineScope
 
 object UtilTriggerContext {
 
@@ -12,12 +11,12 @@ object UtilTriggerContext {
      */
     fun createSimpleTriggerContext(
         trigger: IAppTrigger,
-        name: String = "testTrigger",
+        description: TriggerDescription,
         pollCycles: Int? = null,
         pollIntervalSec: Int? = null
     ): TriggerContext {
         return TriggerContext(
-            description = TriggerDescription(name),
+            description = description,
             trigger = trigger,
             pollCycles = pollCycles,
             pollIntervalSec = pollIntervalSec

@@ -2,23 +2,17 @@ package com.mindjourney.core.observer.trigger.util
 
 import com.mindjourney.core.observer.trigger.TriggerManager
 import com.mindjourney.core.observer.trigger.model.IAppTrigger
-import com.mindjourney.core.observer.trigger.util.TriggerContext
+import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 
 object UtilTriggerManager {
 
     fun createWithContexts(
-        testScope: TestScope,
+        scope: CoroutineScope,
         contexts: List<TriggerContext>
     ): TriggerManager {
 
-        val dispatcher = StandardTestDispatcher(testScope.testScheduler)
-        val scope = CoroutineScope(dispatcher)
         val manager = TriggerManager(scope)
 
         val flow = MutableStateFlow(contexts)
@@ -29,10 +23,11 @@ object UtilTriggerManager {
     }
 
     fun createWithSingleTrigger(
-        scope: TestScope,
-        trigger: IAppTrigger
+        scope: CoroutineScope,
+        trigger: IAppTrigger,
+        description: TriggerDescription
     ): TriggerManager {
-        val context = UtilTriggerContext.createSimpleTriggerContext(trigger)
+        val context = UtilTriggerContext.createSimpleTriggerContext(trigger, description)
         return createWithContexts(scope, listOf(context))
     }
 }
