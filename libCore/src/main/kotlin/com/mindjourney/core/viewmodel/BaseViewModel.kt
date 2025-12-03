@@ -30,8 +30,8 @@ abstract class BaseViewModel(
      * Note: Avoid putting initialization logic in the init block of the ViewModel,
      * as it LEADS to issues with dependency injection frameworks like Hilt.
      */
-    protected fun ensureInit(viewModelScope: CoroutineScope) {
-
+    protected fun initReactiveManager(viewModelScope: CoroutineScope) {
+        ctx.source = this::class.simpleName ?: "BaseViewModel"
         reactiveManager = ReactiveHandler(
             ctx,
             viewModelScope,

@@ -26,7 +26,7 @@ class ViewModelContext(
      * inside the same navigation host.
      */
     var isPrimary: Boolean,
-    var source: String,
+    var source: String = "unknown",
     val screenTracker: ScreenTracker,
     val observer: IAppScreenObserver,
     val triggersContext: List<TriggerContext>
