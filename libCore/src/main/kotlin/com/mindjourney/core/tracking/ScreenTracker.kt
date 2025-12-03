@@ -1,6 +1,5 @@
 package com.mindjourney.core.tracking
 
-import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.tracking.events.ActiveScreenEventBus
 import com.mindjourney.core.tracking.events.ScreenReselectDetector
 import com.mindjourney.core.tracking.model.CoreScreen
@@ -8,6 +7,7 @@ import com.mindjourney.core.tracking.state.HistoryScreenHolder
 import com.mindjourney.core.tracking.state.NavigationReadinessTracker
 import com.mindjourney.core.tracking.state.ScreenStateHolder
 import com.mindjourney.core.util.logging.injectedLogger
+import com.mindjourney.core.util.logging.off
 import com.mindjourney.core.util.logging.on
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -50,7 +50,6 @@ class ScreenTracker @Inject constructor(
     // --- Convenience accessors ---
     val activeScreen get() = state.activeScreen
 
-    // --- API ---
 
     /**
      * Sets the active screen and emits events as needed.
@@ -59,29 +58,30 @@ class ScreenTracker @Inject constructor(
      * it triggers reselection handling instead.
      *
      * @param screen The [CoreScreen] to set as active.
-     * @param first Indicates if the the first screen from history will be taken.
      */
-    fun setActiveScreen(screen: CoreScreen, first: Boolean = false) {
-        val previous = getPrevious(first)
-        val isReselect = previous == screen && history.screens.isNotEmpty()
-
-        if (isReselect && state.activeScreenChangeCounter.value.changeCount == 0) {
+    fun setActiveScreen(screen: CoreScreen) {
+        val previous = getPrevious()
+        val isReselected = screen == previous
+        log.d("counter: ${state.activeScreenChangeCounter.value.changeCount}")
+        log.d("Request to set active screen to '${screen.title}' (previous='${previous.title}', isReselect=$isReselected)")
+        if (isReselected && state.activeScreenChangeCounter.value.changeCount == 1) {
             log.d("Reselection. It was already select")
             return
         }
 
-        if (isReselect) {
+        if (isReselected) {
             log.d("Active screen is reselected")
             reselectScreen(screen)
         } else {
-            addToHistory(screen)
             state.setActiveScreen(screen)
+            addToHistory(screen)
             log.d("Active screen changed from '${previous.title}' to '${screen.title}'")
         }
         bus.emitScreenChanged(screen)
     }
 
     private fun addToHistory(screen: CoreScreen) {
+        log.d("Adding screen='${screen.title}' to history", off)
         history.add(screen)
     }
 
@@ -93,11 +93,11 @@ class ScreenTracker @Inject constructor(
 
     fun requestBack() = bus.emitBackRequested()
 
-    private fun getPrevious(first: Boolean): CoreScreen =
-        if (first)
-            history.clean()
+    private fun getPrevious(): CoreScreen =
+        if (history.screens.isEmpty())
+            CoreScreen.Unknown
         else
-            state.activeScreen.value
+            history.screens.last()
 
     companion object {
         fun empty() = ScreenTracker()

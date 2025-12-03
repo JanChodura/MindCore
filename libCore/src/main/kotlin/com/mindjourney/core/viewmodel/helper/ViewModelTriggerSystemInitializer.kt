@@ -1,10 +1,8 @@
 package com.mindjourney.core.viewmodel.helper
 
-import com.mindjourney.core.observer.trigger.TriggerPoll
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import com.mindjourney.core.util.logging.on
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -25,12 +23,10 @@ class ViewModelTriggerSystemInitializer(
         initObserverForPrimaryVM()
     }
 
-    // --- private helpers ---
-
     private fun setupTriggerSources() {
         ctx.triggersContext.forEach { triggerContext ->
-            log.d("Setting up trigger source for trigger: ${triggerContext.description} with source: ${ctx.source}")
             triggerContext.description.source = ctx.source
+            log.d("Setting up source for trigger: ${triggerContext.description}")
         }
     }
 

@@ -1,14 +1,11 @@
 package com.mindjourney.core.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.mindjourney.core.tracking.model.CoreScreen
 import com.mindjourney.core.viewmodel.helper.INavigationFacade
 import com.mindjourney.core.viewmodel.helper.IReactiveHandler
-import com.mindjourney.core.viewmodel.helper.PipelinePhaseEnum
 import com.mindjourney.core.viewmodel.helper.ReactiveHandler
 import com.mindjourney.core.viewmodel.helper.ViewModelContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 
 abstract class BaseViewModel(
     override val navigationFcd: INavigationFacade,

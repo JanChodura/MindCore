@@ -69,7 +69,7 @@ open class ReactiveHandler(
                 .filter { it }
                 .take(1)
                 .collect {
-                    log.d("ReactiveHandler: Trigger system is ready.")
+                    log.d("ReactiveHandler: Trigger system is ready in source=${ctx.source}")
                     onReady()
                 }
         }
@@ -101,7 +101,7 @@ open class ReactiveHandler(
             .firstOrNull { triggerClass.isInstance(it.trigger) }
             ?.trigger as? T ?: return
 
-        log.d("ReactiveHandler: Observing readiness for trigger: ${triggerClass.simpleName}")
+        log.d("ReactiveHandler: Observing readiness for trigger: ${trigger.description}")
         val job = scope.launch {
             trigger.isReady
                 .onStart {

@@ -1,5 +1,6 @@
 package com.mindjourney.core.observer.trigger
 
+import com.mindjourney.core.observer.trigger.model.TriggerPool
 import com.mindjourney.core.observer.trigger.model.TriggerResult
 import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
 import com.mindjourney.core.observer.trigger.util.TriggerContext
@@ -7,6 +8,7 @@ import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -48,10 +50,10 @@ class TriggerManager(
     }
 
     /** Initializes triggers*/
-    fun initTriggers(triggersFlow: StateFlow<List<TriggerContext>>? = null) {
+    fun initTriggers(triggersFlow: StateFlow<List<TriggerContext>> = MutableStateFlow(emptyList())) {
         log.d("TriggerManager: Initializing triggers from flow of size=${triggersFlow?.value?.size ?: 0}")
         triggers.clear()
-        triggers.addAll(triggersFlow?.value.orEmpty())
+        triggers.addAll(triggersFlow.value.map { ctx -> ctx.copy(trigger = TriggerPool.getOrCreate(ctx.trigger)) })
     }
 
     /** Starts processing all triggers, deciding between polling and reactive modes. */
