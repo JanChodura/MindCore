@@ -3,6 +3,7 @@ package com.mindjourney.core.observer.trigger
 import app.cash.turbine.test
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
+import com.mindjourney.core.observer.trigger.model.TriggerResultType
 import com.mindjourney.core.observer.trigger.util.ScopeForTest
 import com.mindjourney.core.observer.trigger.util.SimpleReactiveTestTrigger
 import com.mindjourney.core.observer.trigger.util.TestTriggerResultConsumer
@@ -40,7 +41,8 @@ class TriggerReactiveManagerTest {
     @Test
     fun reactiveTriggerEmitsResultOnFirstFlowEvent() = testScope.runTest {
         // Arrange
-        val expectedResult = TriggerResult.ExecuteAction("reactiveAction")
+        val description = TriggerDescription("Reactive Test Trigger", "EnvTest")
+        val expectedResult = TriggerResult(description, TriggerResultType.ExecuteAction("reactiveAction"))
 
         val sourceFlow = MutableSharedFlow<Unit>(replay = 1)
         val trigger = SimpleReactiveTestTrigger(
@@ -48,7 +50,7 @@ class TriggerReactiveManagerTest {
             result = expectedResult,
         )
         val scope = ScopeForTest.get(testScope)
-        val manager = UtilTriggerManager.createWithSingleTrigger(scope, trigger, TriggerDescription("Reactive Test Trigger", "EnvTest"))
+        val manager = UtilTriggerManager.createWithSingleTrigger(scope, trigger, description)
         val consumer = TestTriggerResultConsumer()
         manager.observeTriggerResults(consumer)
 

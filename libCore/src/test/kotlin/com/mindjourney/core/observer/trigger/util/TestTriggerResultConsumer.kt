@@ -1,6 +1,8 @@
 package com.mindjourney.core.observer.trigger.util
 
+import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
+import com.mindjourney.core.observer.trigger.model.TriggerResultType
 import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

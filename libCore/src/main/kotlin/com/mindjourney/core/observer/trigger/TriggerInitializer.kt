@@ -1,14 +1,14 @@
 package com.mindjourney.core.observer.trigger
 
+import com.mindjourney.core.observer.trigger.model.IAppTrigger
 import com.mindjourney.core.observer.trigger.model.IPollingTrigger
 import com.mindjourney.core.observer.trigger.model.IReactiveTrigger
 import com.mindjourney.core.observer.trigger.model.PollConfig
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
-import com.mindjourney.core.observer.trigger.model.TriggerResult
+import com.mindjourney.core.observer.trigger.model.TriggerResultType
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
-import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 
 class TriggerInitializer(
     private val scope: CoroutineScope,
-    private val onResult: (TriggerResult) -> Unit
+    private val onResult: (IAppTrigger, TriggerResultType) -> Unit
 ) {
 
     private val log = injectedLogger<TriggerInitializer>(off)
@@ -65,7 +65,7 @@ class TriggerInitializer(
         scope.launch {
             tickStream.collectLatest {
                 val result = trigger.tryExecute()
-                if (result !is TriggerResult.None) onResult(result)
+                if (result.type !is TriggerResultType.None) onResult(trigger, result.type)
             }
         }
     }
@@ -77,8 +77,8 @@ class TriggerInitializer(
     ): IReactiveTrigger {
         log.d("Initializing ReactiveTrigger: $description")
         trigger.description = description
-        trigger.startReactiveFlow(scope, description) { result ->
-            if (result !is TriggerResult.None) onResult(result)
+        trigger.startReactiveFlow(scope, description) { trigger, type ->
+            if (type !is TriggerResultType.None) onResult(trigger, type)
         }
         return trigger
     }

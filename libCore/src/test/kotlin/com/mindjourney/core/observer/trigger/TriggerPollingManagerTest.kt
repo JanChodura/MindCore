@@ -3,6 +3,7 @@ package com.mindjourney.core.observer.trigger
 import app.cash.turbine.test
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
+import com.mindjourney.core.observer.trigger.model.TriggerResultType
 import com.mindjourney.core.observer.trigger.util.ScopeForTest
 import com.mindjourney.core.observer.trigger.util.SimplePollingTestTrigger
 import com.mindjourney.core.observer.trigger.util.UtilTriggerManager
@@ -39,12 +40,13 @@ class TriggerPollingManagerTest {
     @Test
     fun triggerResultIsEmittedAfterOneTick() = testScope.runTest {
         // Arrange
-        val expectedResult = TriggerResult.ExecuteAction("testAction")
+        val description = TriggerDescription("testPolling", "testSource")
+        val expectedResult = TriggerResult(description, TriggerResultType.ExecuteAction("testAction"))
         val trigger = SimplePollingTestTrigger(expectedResult)
         val scope = ScopeForTest.get(testScope)
 
         // Act - starts polling flow
-        val manager = UtilTriggerManager.createWithSingleTrigger(scope, trigger, TriggerDescription("Polling Test Trigger", "EnvTest"))
+        val manager = UtilTriggerManager.createWithSingleTrigger(scope, trigger, description)
 
 
         // Assert

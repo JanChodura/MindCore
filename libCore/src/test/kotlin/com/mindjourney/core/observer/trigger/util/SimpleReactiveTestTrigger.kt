@@ -3,6 +3,7 @@ package com.mindjourney.core.observer.trigger.util
 import com.mindjourney.core.observer.trigger.model.ReactiveTrigger
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
 import com.mindjourney.core.observer.trigger.model.TriggerResult
+import com.mindjourney.core.observer.trigger.model.TriggerResultType
 import kotlinx.coroutines.flow.Flow
 
 class SimpleReactiveTestTrigger<T>(

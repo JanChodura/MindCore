@@ -2,7 +2,6 @@ package com.mindjourney.core.observer.trigger.model
 
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
-import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,11 +54,11 @@ abstract class ReactiveTrigger<T>(
     override fun startReactiveFlow(
         scope: CoroutineScope,
         description: TriggerDescription,
-        onResult: (TriggerResult) -> Unit
+        onResult: (IAppTrigger, TriggerResultType) -> Unit
     ) {
         this.description = description
         log.d("Starting flow for: $description")
-
+        val activeTrigger = this
         scope.launch {
             sourceFlow.collectLatest {
                 log.d("Detected change in $description: $it")
@@ -67,10 +66,8 @@ abstract class ReactiveTrigger<T>(
                 _isReady.value = true
 
                 val result = tryExecute()
-                if (result !is TriggerResult.None) {
-                    log.d("$description produced result: $result")
-                    onResult(result)
-                }
+                log.d("$description produced result: $result")
+                onResult(activeTrigger, result.type)
             }
         }
     }

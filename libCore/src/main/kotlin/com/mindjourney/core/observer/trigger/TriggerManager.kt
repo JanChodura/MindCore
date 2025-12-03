@@ -41,9 +41,9 @@ class TriggerManager(
         getAllTriggers = { triggers },
     )
 
-    private val triggerSelector = TriggerInitializer(scope) { result ->
+    private val triggerSelector = TriggerInitializer(scope) { trigger, resultType ->
         scope.launch {
-            _triggerResult.emit(result)
+            _triggerResult.emit(TriggerResult(trigger.description, resultType))
         }
     }
 

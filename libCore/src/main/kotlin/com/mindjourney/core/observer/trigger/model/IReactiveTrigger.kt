@@ -23,7 +23,7 @@ interface IReactiveTrigger : IAppTrigger {
      *  - subscribe to the stream
      *  - wait for incoming events
      *  - invoke [tryExecute] on each emission
-     *  - forward non-empty [TriggerResult] values to `onResult`
+     *  - forward non-empty [TriggerResultType] values to `onResult`
      *
      * @param scope Coroutine scope driving observation.
      * @param description Human-readable metadata for logging and debugging.
@@ -32,6 +32,6 @@ interface IReactiveTrigger : IAppTrigger {
     fun startReactiveFlow(
         scope: kotlinx.coroutines.CoroutineScope,
         description: TriggerDescription,
-        onResult: (TriggerResult) -> Unit
+        onResult: (IAppTrigger, TriggerResultType) -> Unit
     )
 }
