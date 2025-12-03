@@ -1,7 +1,6 @@
 package com.mindjourney.core.viewmodel.helper
 
 import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.off
 import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -11,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 class ViewModelTriggerSystemInitializer(
     private val ctx: ViewModelContext,
-    ) {
+) {
 
     private val log = injectedLogger<ViewModelTriggerSystemInitializer>(on)
 
@@ -20,7 +19,7 @@ class ViewModelTriggerSystemInitializer(
      */
     fun initObservingTriggersIn() {
         setupTriggerSources()
-        initObserverForPrimaryVM()
+        initObserverForVM()
     }
 
     private fun setupTriggerSources() {
@@ -30,11 +29,7 @@ class ViewModelTriggerSystemInitializer(
         }
     }
 
-    private fun initObserverForPrimaryVM() {
-
-        if (ctx.isPrimary) {
-            ctx.observer.init(MutableStateFlow(ctx.triggersContext))
-
-        }
+    private fun initObserverForVM() {
+        ctx.observer.init(MutableStateFlow(ctx.triggersContext))
     }
 }
