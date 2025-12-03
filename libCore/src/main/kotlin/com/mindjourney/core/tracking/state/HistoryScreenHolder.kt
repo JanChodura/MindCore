@@ -18,9 +18,4 @@ class HistoryScreenHolder {
         screens += screen
     }
 
-    /** When history must be cleaned. */
-    fun clean():CoreScreen {
-        screens.clear()
-        return CoreScreen.Unknown
-    }
 }
