@@ -15,21 +15,22 @@ class ViewModelTriggerSystemInitializer(
     private val ctx: ViewModelContext,
     ) {
 
-    private val log = injectedLogger<ViewModelTriggerSystemInitializer>(off)
+    private val log = injectedLogger<ViewModelTriggerSystemInitializer>(on)
 
     /**
      * Public entry point for initializing trigger observation for given ViewModel.
      */
-    fun initObservingTriggersIn(source: String) {
-        setupTriggerSources(source)
+    fun initObservingTriggersIn() {
+        setupTriggerSources()
         initObserverForPrimaryVM()
     }
 
     // --- private helpers ---
 
-    private fun setupTriggerSources(source: String) {
+    private fun setupTriggerSources() {
         ctx.triggersContext.forEach { triggerContext ->
-            triggerContext.description.source = source
+            log.d("Setting up trigger source for trigger: ${triggerContext.description} with source: ${ctx.source}")
+            triggerContext.description.source = ctx.source
         }
     }
 

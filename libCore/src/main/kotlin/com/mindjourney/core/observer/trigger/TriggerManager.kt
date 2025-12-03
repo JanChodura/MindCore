@@ -49,12 +49,14 @@ class TriggerManager(
 
     /** Initializes triggers*/
     fun initTriggers(triggersFlow: StateFlow<List<TriggerContext>>? = null) {
+        log.d("TriggerManager: Initializing triggers from flow of size=${triggersFlow?.value?.size ?: 0}")
         triggers.clear()
         triggers.addAll(triggersFlow?.value.orEmpty())
     }
 
     /** Starts processing all triggers, deciding between polling and reactive modes. */
     fun startAllTriggers() {
+        log.d("TriggerManager: Starting all triggers. Total triggers=${triggers.size}")
         triggersLauncher.launchAll()
     }
 
@@ -63,7 +65,11 @@ class TriggerManager(
 
     fun observeTriggerResults(resultConsumer: TriggerResultConsumer) {
         scope.launch {
-            triggerResult.collectLatest { resultConsumer.consume(it) }
+            log.d("TriggerManager: Observing trigger results to consume them.")
+            triggerResult.collectLatest {
+                log.d("TriggerManager: Emitting trigger result: $it")
+                resultConsumer.consume(it)
+            }
         }
     }
 }

@@ -25,6 +25,7 @@ open class ReactiveHandler(
     protected val jobs = mutableListOf<Job>()
 
     override fun initialize() {
+        log.d("Initializing Reactive handler. isInitialized=$isInitialized")
         if (isInitialized) return
 
         initializeTriggerSystemInitializer()
@@ -48,7 +49,9 @@ open class ReactiveHandler(
             val baseScreen = ctx.screenTracker.activeScreen.value
 
             ctx.screenTracker.state.activeScreen.collect { screen ->
+                log.d("ReactiveHandler: Observed active screen change to $screen")
                 if (screen == baseScreen) {
+                    log.d("ReactiveHandler: Active screen matches base screen. Invoking onScreenActive.")
                     onScreenActive()
                 }
             }
@@ -75,13 +78,12 @@ open class ReactiveHandler(
     }
 
     private fun initializeTriggerSystemInitializer() {
-        val source = this::class.simpleName ?: "UnknownVM"
 
         val initializer = ViewModelTriggerSystemInitializer(
             ctx = ctx,
         )
-
-        initializer.initObservingTriggersIn(source)
+        log.d("ReactiveHandler: Initializing trigger system initializer for source=${ctx.source}")
+        initializer.initObservingTriggersIn()
     }
 
     private fun observeCustomTriggers() {
@@ -99,10 +101,12 @@ open class ReactiveHandler(
             .firstOrNull { triggerClass.isInstance(it.trigger) }
             ?.trigger as? T ?: return
 
+        log.d("ReactiveHandler: Observing readiness for trigger: ${triggerClass.simpleName}")
         val job = scope.launch {
             trigger.isReady
                 .onStart {
                     if (trigger.isReady.value) {
+                        log.d("ReactiveHandler: Trigger ${triggerClass.simpleName} is already ready on start.")
                         onTriggerReady()
                         onReady()
                     }
@@ -110,6 +114,7 @@ open class ReactiveHandler(
                 .filter { it }
                 .take(1)
                 .collect {
+                    log.d("ReactiveHandler: Trigger ${triggerClass.simpleName} became ready.")
                     onTriggerReady()
                     onReady()
                 }

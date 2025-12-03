@@ -7,6 +7,7 @@ import com.mindjourney.core.tracking.ScreenTrackerFactory
 import com.mindjourney.core.tracking.ScreenTracker
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
+import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -28,7 +29,7 @@ class AppScreenObserver @Inject constructor(
     private val resultConsumer: TriggerResultConsumer,
 ):IAppScreenObserver {
 
-    private val log = injectedLogger<AppScreenObserver>(off)
+    private val log = injectedLogger<AppScreenObserver>(on)
 
     companion object {
         /** Creates an empty/no-op instance of AppObserver for cases where DI is not available like Preview, Tests. */
@@ -46,6 +47,7 @@ class AppScreenObserver @Inject constructor(
     private var triggersFlow: StateFlow<List<TriggerContext>>? = null
 
     override fun init(triggersFlow: StateFlow<List<TriggerContext>>) {
+        log.d("Initializing AppScreenObserver with triggersFlow of size=${triggersFlow.value.size}")
         this.triggersFlow = triggersFlow
         triggerManager.initTriggers(triggersFlow)
         observeActiveScreenTransitions()
