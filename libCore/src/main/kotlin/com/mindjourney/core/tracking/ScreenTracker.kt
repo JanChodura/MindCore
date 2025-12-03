@@ -66,7 +66,7 @@ class ScreenTracker @Inject constructor(
         val isReselect = previous == screen && history.screens.isNotEmpty()
 
         if (isReselect && state.activeScreenChangeCounter.value.changeCount == 0) {
-            log.d("Small hack because of an trigger invoked reselection or an change invoked change of flow . it was already reselect")
+            log.d("Reselection. It was already select")
             return
         }
 

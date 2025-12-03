@@ -14,7 +14,7 @@ class NavigationCoordinator @Inject constructor(
     private val screenTracker: ScreenTracker,
 ) : NavigationDispatcher {
 
-    private val log = injectedLogger<NavigationCoordinator>(on)
+    private val log = injectedLogger<NavigationCoordinator>(off)
 
     companion object {
         fun empty() = NavigationCoordinator(ScreenTrackerFactory.empty())

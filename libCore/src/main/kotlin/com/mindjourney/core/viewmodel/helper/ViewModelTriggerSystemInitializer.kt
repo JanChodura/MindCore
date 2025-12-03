@@ -3,6 +3,7 @@ package com.mindjourney.core.viewmodel.helper
 import com.mindjourney.core.observer.trigger.TriggerPoll
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
+import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 

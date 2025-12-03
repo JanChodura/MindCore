@@ -1,6 +1,8 @@
 package com.mindjourney.core.viewmodel.helper
 
 import com.mindjourney.core.observer.trigger.model.IAppTrigger
+import com.mindjourney.core.util.logging.injectedLogger
+import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
@@ -16,6 +18,7 @@ open class ReactiveHandler(
     private val onReady: () -> Unit,
 ) : IReactiveHandler {
 
+    private val log = injectedLogger<ReactiveHandler>(on)
     protected val triggersContext = ctx.triggersContext
 
     private var isInitialized = false
@@ -23,12 +26,12 @@ open class ReactiveHandler(
 
     override fun initialize() {
         if (isInitialized) return
-        isInitialized = true
 
-        initializeTriggerObserver()
+        initializeTriggerSystemInitializer()
         observeScreen()
         observeTriggerInitialization()
         observeCustomTriggers()
+        isInitialized = true
     }
 
     override fun clear() {
@@ -37,7 +40,6 @@ open class ReactiveHandler(
     }
 
     override fun updateTriggers() {
-        // pro případ, že se změní triggerContext
         observeCustomTriggers()
     }
 
@@ -56,7 +58,7 @@ open class ReactiveHandler(
 
     private fun observeTriggerInitialization() {
         val readinessTrigger = ctx.triggersContext
-            .firstOrNull { it.trigger.isReady != null }
+            .firstOrNull { !it.trigger.isReady.value }
             ?.trigger ?: return
 
         val job = scope.launch {
@@ -64,6 +66,7 @@ open class ReactiveHandler(
                 .filter { it }
                 .take(1)
                 .collect {
+                    log.d("ReactiveHandler: Trigger system is ready.")
                     onReady()
                 }
         }
@@ -71,7 +74,7 @@ open class ReactiveHandler(
         jobs += job
     }
 
-    private fun initializeTriggerObserver() {
+    private fun initializeTriggerSystemInitializer() {
         val source = this::class.simpleName ?: "UnknownVM"
 
         val initializer = ViewModelTriggerSystemInitializer(
