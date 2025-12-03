@@ -51,14 +51,14 @@ class TriggerManager(
 
     /** Initializes triggers*/
     fun initTriggers(triggersFlow: StateFlow<List<TriggerContext>> = MutableStateFlow(emptyList())) {
-        log.d("TriggerManager: Initializing triggers from flow of size=${triggersFlow?.value?.size ?: 0}")
+        log.d("Initializing triggers from flow of size=${triggersFlow?.value?.size ?: 0}")
         triggers.clear()
         triggers.addAll(triggersFlow.value.map { ctx -> ctx.copy(trigger = TriggerPool.getOrCreate(ctx.trigger)) })
     }
 
     /** Starts processing all triggers, deciding between polling and reactive modes. */
     fun startAllTriggers() {
-        log.d("TriggerManager: Starting all triggers. Total triggers=${triggers.size}")
+        log.d("Starting all triggers. Total triggers=${triggers.size}")
         triggersLauncher.launchAll()
     }
 
@@ -67,9 +67,9 @@ class TriggerManager(
 
     fun observeTriggerResults(resultConsumer: TriggerResultConsumer) {
         scope.launch {
-            log.d("TriggerManager: Observing trigger results to consume them.")
+            log.d("Observing trigger results to consume them.")
             triggerResult.collectLatest {
-                log.d("TriggerManager: Emitting trigger result: $it")
+                log.d("Emitting trigger result: $it")
                 resultConsumer.consume(it)
             }
         }
