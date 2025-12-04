@@ -1,8 +1,7 @@
 package com.mindjourney.core.viewmodel
 
+import com.mindjourney.core.eventbus.consumer.TriggerResultConsumer
 import com.mindjourney.core.navigation.NavigationCoordinator
-import com.mindjourney.core.observer.AppTrackerObserver
-import com.mindjourney.core.observer.trigger.model.TriggerResultConsumer
 import com.mindjourney.core.tracking.ScreenTrackerFactory
 import com.mindjourney.core.util.logging.ILogger
 import com.mindjourney.core.util.logging.LogDebugSwitch

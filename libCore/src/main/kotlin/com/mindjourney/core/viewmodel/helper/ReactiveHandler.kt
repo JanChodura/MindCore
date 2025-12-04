@@ -1,6 +1,6 @@
 package com.mindjourney.core.viewmodel.helper
 
-import com.mindjourney.core.observer.trigger.model.IAppTrigger
+import com.mindjourney.core.eventbus.model.trigger.IAppTrigger
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
@@ -12,14 +12,14 @@ import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
 open class ReactiveHandler(
-    private val ctx: ViewModelContext,
+    private val vmCtx: ViewModelContext,
     protected val scope: CoroutineScope,
     private val onScreenActive: () -> Unit,
     private val onReady: () -> Unit,
 ) : IReactiveHandler {
 
     private val log = injectedLogger<ReactiveHandler>(on)
-    protected val triggersContext = ctx.triggersContext
+    protected val triggersContext = vmCtx.triggersContext
 
     private var isInitialized = false
     protected val jobs = mutableListOf<Job>()
@@ -40,13 +40,17 @@ open class ReactiveHandler(
     }
 
     private fun setupTriggerSources() {
-        ctx.triggersContext = ctx.triggersContext.map { trigger ->
-            trigger.copy(description = trigger.description.copy(source = ctx.source))
+        vmCtx.triggersContext.forEach { triggerCtx ->
+            triggerCtx.trigger.updateSource(vmCtx.source)
         }
     }
 
+    fun IAppTrigger.updateSource(source: String) {
+        description = description.copy(source = source)
+    }
+
     private fun observeTriggerInitialization() {
-        val readinessTrigger = ctx.triggersContext
+        val readinessTrigger = vmCtx.triggersContext
             .firstOrNull { !it.trigger.isReady.value }
             ?.trigger ?: return
 
@@ -55,7 +59,7 @@ open class ReactiveHandler(
                 .filter { it }
                 .take(1)
                 .collect {
-                    log.d("Trigger system is ready in source=${ctx.source}")
+                    log.d("Trigger system is ready in source=${vmCtx.source}")
                     onReady()
                 }
         }
@@ -66,9 +70,9 @@ open class ReactiveHandler(
     private fun initializeTriggerSystemInitializer() {
 
         val initializer = ViewModelTriggerSystemInitializer(
-            ctx = ctx,
+            ctx = vmCtx,
         )
-        log.d("Initializing trigger system initializer for source=${ctx.source}")
+        log.d("Initializing trigger system initializer for source=${vmCtx.source}")
         initializer.initObserving()
     }
 

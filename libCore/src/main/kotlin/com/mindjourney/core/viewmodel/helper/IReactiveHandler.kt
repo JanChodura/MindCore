@@ -1,6 +1,6 @@
 package com.mindjourney.core.viewmodel.helper
 
-import com.mindjourney.core.observer.trigger.model.IAppTrigger
+import com.mindjourney.core.eventbus.model.trigger.IAppTrigger
 import kotlin.reflect.KClass
 
 /**
