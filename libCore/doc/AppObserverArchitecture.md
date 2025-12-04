@@ -1,229 +1,205 @@
-OBSERVER ARCHITECTURE (MindJourney – Updated Reactive/Polling Trigger System)
-=============================================================================
+# Observer–Event–Trigger Architecture
 
-1. EventTriggersModule (Dependency Injection configuration)
------------------------------------------------------------
-Defines all triggers used by the application and groups them into TriggerContext sets.
+This document defines the unified architecture for observer-driven event processing and trigger
+execution. It describes how observers emit events, how events are dispatched, and how triggers
+perform domain actions.
 
-Each TriggerContext contains:
-- description: TriggerDescription (name + source)
-- trigger: implementation of IAppTrigger
-- optional polling configuration (pollCycles, pollIntervalSec)
+The system is composed of five layers:
 
-Hilt bindings examples:
-- @Named("ConvictionTriggers") → triggers active on Conviction screen
-- @Named("GlobalTriggers")     → triggers active regardless of screen
+1. **Observers** – Sources of events
+2. **Observer Contexts** – Declarative configuration of observers
+3. **Event Manager** – Central routing of events
+4. **Trigger Contexts** – Declarative bindings between events and triggers
+5. **Triggers** – Domain logic executed in response to events
 
-This module is the registration layer for the entire observer system.
+Each layer has a single responsibility and is fully decoupled from the others.
 
+---
 
-2. AppScreenObserver (Application Orchestrator)
-------------------------------------------------
-Coordinates high-level trigger execution in reaction to:
-- screen changes
-- application lifecycle states
-- ViewModel-provided triggersFlow
+## 1. Observers
 
-Responsibilities:
-- receives StateFlow<List<TriggerContext>> for the current screen or feature
-- configures TriggerManager with the active TriggerContexts
-- listens to ActiveScreenTracker for screen switches
-- restarts trigger evaluation when screen context changes
-- collects TriggerResult from TriggerManager
-- passes results to TriggerResultConsumer for handling
+Observers watch external signals and convert them into `ObserverEvent` objects. They never contain
+domain logic.
 
-AppScreenObserver is the central control tower integrating:
-- UI screen state
-- trigger orchestration
-- navigation and app reactions
+### 1.1 FlowObserver
 
+* Observes any `Flow<T>`.
+* Each emission is mapped to an `ObserverEvent` through a provided mapping function.
+* Emits the event to the `EventManager`.
+* Can be externally terminated via a finish-flow.
 
-3. TriggerManager (Coordinator of trigger lifecycle)
------------------------------------------------------
-Core responsibilities:
-- stores active TriggerContext list
-- delegates trigger start logic to TriggersLauncher
-- exposes unified output stream: StateFlow<TriggerResult>
-- forwards every non-None TriggerResult to observers
+### 1.2 TimeObserver
 
-TriggerManager does NOT:
-- manage job lifecycles
-- perform scheduling logic
-- collect flows directly (TriggerInitializer does that)
+* Emits `ObserverEvent.TimeTick` at intervals defined by `TimeObserverPolicy`.
+* Active only within a configured time window.
+* Terminable via a finish-flow.
 
-It acts as the container and lifecycle entrypoint for all triggers.
+Observers never evaluate whether an event "should" occur — they only emit.
 
+---
 
-4. TriggersLauncher (Runner of polling and reactive triggers)
---------------------------------------------------------------
-Starts all triggers based on their type.
+## 2. Observer Contexts
 
-Flow:
-- splits TriggerContexts into polling and reactive groups
-- launches polling triggers every time (safe to restart)
-- launches reactive triggers every time (reactiveJobs removed for clarity)
+Observer contexts describe how observer instances should behave.
 
-It delegates actual trigger execution wiring to TriggerInitializer.
+### 2.1 FlowObserverContext
 
+Contains:
 
-5. TriggerInitializer (Low-level wiring of trigger execution)
---------------------------------------------------------------
-Determines how each trigger is executed:
+* A source `flow`.
+* A `mapToEvent` function converting values to events.
+* A declared event-type for diagnostics.
+* An optional finish-flow.
 
-- If trigger is IPollingTrigger:
-  createTickStream()
-  collectLatest { trigger.tryExecute() }
-  (polling triggers return results directly to TriggerManager)
+### 2.2 TimeObserverContext
 
-- If trigger is IReactiveTrigger:
-  startReactiveFlow() is attached and the trigger forwards each
-  non-None TriggerResult through an `onResult(result)` callback.
+Contains:
 
-For reactive triggers:
-- TriggerInitializer wraps the callback into `scope.launch { _triggerResult.emit(result) }`,
-- result delivery is asynchronous,
-- a TriggerResultConsumer must be observing results, otherwise
-  emitted values will not reach TriggerManager’s output stream.
+* A time policy specifying interval, start, and end.
+* A finish-flow.
 
-TriggerInitializer is the only place that subscribes to flows and
-bridges reactive trigger results back to TriggerManager.
+Contexts are passive configuration objects and contain no logic.
 
+---
 
-6. TriggerPoll (Tick stream generator – cleaned version)
----------------------------------------------------------
-TriggerPoll is now stateless and contains only one function:
+## 3. Observer Initialization
 
-createTickStream(scope, PollConfig, TriggerDescription)
+Initialization links observer contexts with concrete observer instances.
 
-This produces a private MutableStateFlow<Tick> containing:
-- TickFactory.init(description)
-- sequence of periodic ticks
-- final tick with isFinal = true
+### 3.1 IObserverInitializer
 
-No global state. No job storage. No start/stop API.
+Defines a single method:
 
-It is a pure utility generating time-based impulses for polling triggers.
+```
+initialize(contexts: List<ObserverContext>)
+```
 
+It activates all observers declared in the contexts.
 
-7. IAppTrigger IMPLEMENTATIONS
--------------------------------
-All triggers implement:
+### 3.2 ObserverInitializer (abstract)
 
-suspend fun tryExecute(): TriggerResult
-val isReady: StateFlow<Boolean>
-var description: TriggerDescription
+Provides shared wiring logic:
 
-Two categories exist:
+* For each `FlowObserverContext` → start `FlowObserver`
+* For each `TimeObserverContext` → start `TimeObserver`
 
-A) Reactive triggers:
-- implement IReactiveTrigger
-- extend ReactiveTrigger<T>
-- provide sourceFlow (Flow<T>)
-- startReactiveFlow is called by TriggerInitializer
+### 3.3 GlobalObserverInitializer
 
-B) Polling triggers:
-- implement IPollingTrigger (marker only)
-- do NOT expose flows
-- their evaluation is triggered by ticks from TriggerPoll
+Registers global observers used across the entire application.
 
-Example polling trigger:
-class MorningResetTrigger : IPollingTrigger {
-override suspend fun tryExecute(): TriggerResult { ... }
-}
+### 3.4 DomainObserverInitializer
 
+Registers observers declared within a specific ViewModel or feature.
 
-8. FlowBasedTrigger (Base for reactive triggers – simplified)
---------------------------------------------------------------
-Defines only:
-abstract val sourceFlow: Flow<T>
+---
 
-Used as a lightweight parent for ReactiveTrigger.
-It contains no start logic and no internal scheduling.
+## 4. Event System
 
+All observers emit `ObserverEvent` objects. These are sent into the `EventManager`, the central
+event router.
 
-9. ReactiveTrigger (Concrete reactive trigger base class)
-----------------------------------------------------------
-Extends FlowBasedTrigger<T> and implements IReactiveTrigger.
+### 4.1 EventManager
 
 Responsibilities:
-- holds sourceFlow
-- exposes isReady (true after first emission)
-- starts flow collection via startReactiveFlow()
-- logs and forwards non-None results via onResult callback
 
-ReactiveTrigger is the canonical implementation for stream-driven triggers.
+* Maintain mapping: `EventType → List<IAppTrigger>`.
+* On `onEvent(event)`, locate all triggers bound to the event.
+* Execute each trigger.
+* Wrap results in a `TriggerResult` and forward them to a `TriggerResultConsumer`.
 
+The EventManager contains no domain logic; it only dispatches.
 
-10. TriggerResult (Unified output contract)
--------------------------------------------
-Standard results:
-- None
-- Completed(res)
-- NavigateToScreenFirstPage(screen)
-- ShowDialog(message)
-- ExecuteAction(actionId)
-- Generic(payload)
+---
 
-Generic allows passing custom domain data.
+## 5. Trigger Contexts
 
+A `TriggerContext` binds one trigger to one event.
 
-11. App-specific trigger effects (e.g., MindRiseTriggerEffect)
----------------------------------------------------------------
-These are wrapped inside:
-TriggerResult.Generic(payload)
+Fields:
 
+* `trigger: IAppTrigger`
+* `event: ObserverEvent`
 
-12. TriggerResultConsumer (Application behavior adapter)
---------------------------------------------------------
-Consumes TriggerResult emitted by TriggerManager.
+Each trigger must be associated with exactly one event type.
 
-Responsibilities:
-- handle navigation via ActiveScreenTracker
-- show dialogs
-- execute domain-specific actions
-- interpret Generic payloads
+### 5.1 GlobalTriggerInitializer
 
-This is the bridge between framework-level triggers and real UI actions.
+Registers trigger contexts required at the application level.
 
+### 5.2 DomainTriggerInitializer
 
-13. Full Observer Flow (MindJourney)
-------------------------------------
-User Action / Time Event
-↓
-ActiveScreenTracker (detects screen changes)
-↓
-AppScreenObserver (configures and restarts triggers)
-↓
-TriggerManager (holds and exposes TriggerContext list)
-↓
-TriggersLauncher (splits & starts trigger types)
-↓
-TriggerInitializer
-- Polling: TickStream → tryExecute()
-- Reactive: sourceFlow → tryExecute()
-↓
-TriggerResult (Navigate / Dialog / Action / Generic)
-↓
-TriggerResultConsumer.consume(result)
-↓
-UI / ViewModel / Navigation
+Registers trigger contexts defined by a ViewModel or feature.
 
+---
 
-SUMMARY
--------
-The Observer Architecture is a clean, modular, reactive framework for:
-- screen-aware trigger orchestration
-- time-based evaluation
-- reactivity to state changes
-- unified trigger-result processing
+## 6. Triggers
 
-Each layer has one clear responsibility:
-- Trigger: what should happen
-- TriggerPoll: when it should happen
-- TriggerInitializer: how it starts
-- TriggerManager: which triggers are active
-- AppScreenObserver: why they run (screen context)
-- TriggerResultConsumer: how the app responds
+Triggers contain pure domain logic.
 
-This ensures testability, separation of concerns,
-and predictable asynchronous behavior across the application.
+### 6.1 IAppTrigger
+
+* Exposes `isReady: StateFlow<Boolean>`.
+* Exposes metadata description.
+* Implements `suspend fun tryExecute(): TriggerResultType`.
+
+### 6.2 BaseAppTrigger
+
+Shared implementation handling readiness and description.
+
+Triggers cannot:
+
+* Observe flows directly.
+* Dispatch events.
+* Start coroutines outside `tryExecute()`.
+
+They simply react to one event.
+
+---
+
+## 7. Trigger Execution
+
+When EventManager receives an event:
+
+1. Identify all triggers bound to that event.
+2. Skip triggers where `isReady == false`.
+3. Execute `tryExecute()`.
+4. Wrap result as `TriggerResult`.
+5. Forward to `TriggerResultConsumer`.
+
+`TriggerResult` contains:
+
+* result type
+* event description
+* triggering event
+* timestamp
+* optional metadata
+
+---
+
+## 8. Lifecycle Termination
+
+`IObserverLifecycleTerminator` allows observers to be stopped when receiving a finish signal.
+
+This provides manual control for:
+
+* ViewModel-scoped observers
+* Feature-specific observers
+* Test environments
+
+Termination cancels only the observer job, not the surrounding scope.
+
+---
+
+## 9. Summary
+
+This architecture guarantees:
+
+* Strict separation of observer logic and domain logic.
+* A single dispatch point (EventManager).
+* Declarative configuration via contexts.
+* Predictable trigger execution.
+* Clean global vs domain-level extensibility.
+
+Observers → Events → EventManager → Triggers
+
+Each step is explicit, testable, and isolated.
