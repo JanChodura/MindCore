@@ -1,33 +1,39 @@
-package com.mindjourney.core.eventbus.observer
+package com.mindjourney.core.eventbus.observer.initializer
 
 import com.mindjourney.core.eventbus.model.event.context.FlowObserverContext
 import com.mindjourney.core.eventbus.model.event.context.ObserverContext
 import com.mindjourney.core.eventbus.model.event.context.TimeObserverContext
-import com.mindjourney.core.eventbus.observer.initializer.IObserverInitializer
-import com.mindjourney.core.eventbus.service.EventManager
-import javax.inject.Inject
-import javax.inject.Singleton
+import com.mindjourney.core.eventbus.observer.FlowObserver
+import com.mindjourney.core.eventbus.observer.TimeObserver
+import com.mindjourney.core.eventbus.service.IEventManager
 
 /**
- * Initializes all globally scoped observers for the entire application.
- * Supports FlowObservers and TimeObservers using sealed ObserverContext.
+ * Abstract base class for initializing observers described by ObserverContexts.
+ *
+ * ObserverInitializer does not hold any list of contexts itself. Instead,
+ * concrete subclasses (GlobalObserverInitializer, DomainObserverInitializer)
+ * supply the appropriate contexts and delegate their activation to this class.
+ *
+ * The initializer maps each ObserverContext to its corresponding Observer
+ * implementation (e.g., FlowObserver, TimeObserver) and connects it to the
+ * EventManager. No business logic or filtering is performed here — the purpose
+ * of this class is strictly mechanical wiring between context and observer.
+ *
+ * This initializer never stores state and never controls lifecycle. Its job is
+ * purely: “for each provided ObserverContext, activate the correct observer”.
  */
-@Singleton
-class ObserverInitializer @Inject constructor(
-    private val eventManager: EventManager,
-    private val observers: List<ObserverContext>,
+
+abstract class ObserverInitializer(
+    private val eventManager: IEventManager,
     private val flowObserver: FlowObserver,
-    private val timeObserver: TimeObserver
-) : IObserverInitializer {
+    private val timeObserver: TimeObserver,
+) {
 
-    override fun initialize() {
-        observers.forEach { context ->
-            when (context) {
-                is FlowObserverContext<*> ->
-                    flowObserver.start(eventManager, context)
-
-                is TimeObserverContext ->
-                    timeObserver.start(eventManager, context)
+    fun initialize(contexts: List<ObserverContext>) {
+        contexts.forEach { ctx ->
+            when (ctx) {
+                is FlowObserverContext<*> -> flowObserver.start(eventManager, ctx)
+                is TimeObserverContext -> timeObserver.start(eventManager, ctx)
             }
         }
     }

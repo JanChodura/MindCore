@@ -1,42 +1,28 @@
-package com.mindjourney.core.eventbus.trigger
+package com.mindjourney.core.eventbus.trigger.initializer
 
 import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
-import com.mindjourney.core.eventbus.service.EventManager
-import javax.inject.Inject
-import javax.inject.Singleton
+import com.mindjourney.core.eventbus.service.IEventManager
 
 /**
- * Initializes all globally scoped triggers at application startup.
+ * Abstract base class for initializing TriggerContexts.
  *
- * This initializer receives a DI-provided list of [TriggerContext] instances, each
- * representing a trigger–event binding. Its responsibility is to register all these
- * triggers into the [EventManager], ensuring that:
+ * A TriggerInitializer does not hold trigger contexts itself; concrete
+ * implementations (GlobalTriggerInitializer, DomainTriggerInitializer)
+ * provide the list of contexts to initialize.
  *
- *  - each trigger is assigned to exactly one ObserverEvent
- *  - the EventManager correctly maps event → list of triggers
- *  - global triggers become active before any observer starts emitting events
- *
- * The method [initialize] must be invoked once during the application lifecycle,
- * typically in the application's startup phase (e.g. Application.onCreate).
- *
- * This class performs no evaluation, no filtering, and no logic beyond registration.
+ * The base class performs the mechanical work of registering each trigger
+ * into the EventManager. No filtering, lifecycle handling, or business logic
+ * occurs here: this class has exactly one responsibility — wiring trigger
+ * definitions into the event system.
  */
-@Singleton
-class TriggerInitializer @Inject constructor(
-    private val eventManager: EventManager,
-    private val triggerContexts: List<TriggerContext>
-) : ITriggerInitializer {
-
+abstract class TriggerInitializer(
+    protected val eventManager: IEventManager
+) {
     /**
-     * Registers all global triggers into the EventManager.
-     *
-     * The registration uses the event defined inside each TriggerContext.
-     * After this point, incoming ObserverEvents will correctly dispatch
-     * to their associated triggers.
+     * Registers all provided trigger contexts into the EventManager.
+     * Implementations supply the contexts.
      */
-    override fun initialize() {
-        triggerContexts.forEach { context ->
-            eventManager.register(context)
-        }
+    protected fun registerAll(contexts: List<TriggerContext>) {
+        contexts.forEach { eventManager.register(it) }
     }
 }

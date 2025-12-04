@@ -3,6 +3,7 @@ package com.mindjourney.core.eventbus.observer
 import com.mindjourney.core.eventbus.model.event.ObserverEvent
 import com.mindjourney.core.eventbus.model.event.context.FlowObserverContext
 import com.mindjourney.core.eventbus.service.EventManager
+import com.mindjourney.core.eventbus.service.IEventManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
@@ -23,7 +24,7 @@ class FlowObserver @Inject constructor(
     private val lifecycleTerminator: ObserverLifecycleTerminator?
 ) {
 
-    fun <T> start(eventManager: EventManager, context: FlowObserverContext<T>) {
+    fun <T> start(eventManager: IEventManager, context: FlowObserverContext<T>) {
         lifecycleTerminator ?: return
         val job: Job = scope.launch {
             context.flow.collectLatest { value ->

@@ -69,7 +69,7 @@ open class ReactiveHandler(
 
     private fun initializeTriggerSystemInitializer() {
 
-        val initializer = ViewModelTriggerSystemInitializer(
+        val initializer = DomainEventInitializer(
             ctx = vmCtx,
         )
         log.d("Initializing trigger system initializer for source=${vmCtx.source}")

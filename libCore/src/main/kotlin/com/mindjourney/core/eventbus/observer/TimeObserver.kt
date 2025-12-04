@@ -3,6 +3,7 @@ package com.mindjourney.core.eventbus.observer
 import com.mindjourney.core.eventbus.model.event.ObserverEvent
 import com.mindjourney.core.eventbus.model.event.context.TimeObserverContext
 import com.mindjourney.core.eventbus.service.EventManager
+import com.mindjourney.core.eventbus.service.IEventManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -27,7 +28,7 @@ class TimeObserver @Inject constructor(
     private val observerLifecycleTerminator: ObserverLifecycleTerminator
 ) {
 
-    fun start(eventManager: EventManager, context: TimeObserverContext) {
+    fun start(eventManager: IEventManager, context: TimeObserverContext) {
         val policy = context.policy
 
         // Main ticking job
@@ -50,7 +51,7 @@ class TimeObserver @Inject constructor(
         )
     }
 
-    private fun onEvent(eventManager: EventManager, now: LocalTime) {
+    private fun onEvent(eventManager: IEventManager, now: LocalTime) {
         val date = LocalDate.now()
         eventManager.onEvent(
             ObserverEvent.TimeTick(
