@@ -2,6 +2,7 @@ package com.mindjourney.core.viewmodel.helper
 
 import com.mindjourney.core.eventbus.model.event.context.ObserverContext
 import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
+import com.mindjourney.core.navigation.NavigationDispatcher
 import com.mindjourney.core.tracking.ScreenTracker
 
 /**
@@ -19,7 +20,7 @@ import com.mindjourney.core.tracking.ScreenTracker
  * except for event-binding collections which serve as a registry for ReactiveHandler.
  */
 open class DomainContext(
-    val navigation: INavigationFacade,
+    val navigation: NavigationDispatcher,
     val screenTracker: ScreenTracker,
 ) {
     // ---------------------------------------------------------
@@ -27,7 +28,7 @@ open class DomainContext(
     // ---------------------------------------------------------
 
     /** ViewModel-scoped observer contexts */
-    internal val _observerContexts = mutableListOf<ObserverContext>()
+    private val _observerContexts = mutableListOf<ObserverContext>()
     val observerContexts: List<ObserverContext> get() = _observerContexts
 
     fun addObserver(context: ObserverContext) {
