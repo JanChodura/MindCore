@@ -18,11 +18,4 @@ import javax.inject.Inject
  */
 class DomainTriggerInitializer @Inject constructor(
     eventManager: IEventManager
-) : TriggerInitializer(eventManager) {
-
-
-    /** Registers ViewModel-scoped triggers. */
-    fun initialize(contexts: List<TriggerContext>) {
-        registerAll(contexts)
-    }
-}
+) : TriggerInitializer(eventManager)

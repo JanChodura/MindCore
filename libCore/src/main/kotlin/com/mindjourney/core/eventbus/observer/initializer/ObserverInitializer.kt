@@ -8,28 +8,27 @@ import com.mindjourney.core.eventbus.observer.TimeObserver
 import com.mindjourney.core.eventbus.service.IEventManager
 
 /**
- * Abstract base class for initializing observers described by ObserverContexts.
+ * Abstract base class for initializing observers declared through ObserverContexts.
  *
- * ObserverInitializer does not hold any list of contexts itself. Instead,
- * concrete subclasses (GlobalObserverInitializer, DomainObserverInitializer)
- * supply the appropriate contexts and delegate their activation to this class.
+ * Implementations (GlobalObserverInitializer, DomainObserverInitializer) supply
+ * the list of contexts relevant to their scope, while this class performs the
+ * mechanical work of mapping each ObserverContext to its corresponding Observer
+ * implementation and connecting it to the EventManager.
  *
- * The initializer maps each ObserverContext to its corresponding Observer
- * implementation (e.g., FlowObserver, TimeObserver) and connects it to the
- * EventManager. No business logic or filtering is performed here — the purpose
- * of this class is strictly mechanical wiring between context and observer.
- *
- * This initializer never stores state and never controls lifecycle. Its job is
- * purely: “for each provided ObserverContext, activate the correct observer”.
+ * This initializer stores no state, performs no filtering, and manages no
+ * lifecycle. Its job is purely to wire context → observer → EventManager.
  */
-
 abstract class ObserverInitializer(
     private val eventManager: IEventManager,
     private val flowObserver: FlowObserver,
     private val timeObserver: TimeObserver,
-) {
+) : IObserverInitializer {
 
-    fun initialize(contexts: List<ObserverContext>) {
+    /**
+     * Activates observers for every supplied ObserverContext by delegating
+     * to the correct Observer implementation.
+     */
+    override fun initialize(contexts: List<ObserverContext>) {
         contexts.forEach { ctx ->
             when (ctx) {
                 is FlowObserverContext<*> -> flowObserver.start(eventManager, ctx)

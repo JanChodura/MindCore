@@ -25,6 +25,6 @@ class GlobalTriggerInitializer @Inject constructor(
 
     /** Registers all global triggers. */
     fun initialize() {
-        registerAll(contexts)
+        initialize(contexts)
     }
 }

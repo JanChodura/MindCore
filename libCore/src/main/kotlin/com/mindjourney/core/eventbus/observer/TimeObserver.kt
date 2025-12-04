@@ -2,7 +2,7 @@ package com.mindjourney.core.eventbus.observer
 
 import com.mindjourney.core.eventbus.model.event.ObserverEvent
 import com.mindjourney.core.eventbus.model.event.context.TimeObserverContext
-import com.mindjourney.core.eventbus.service.EventManager
+import com.mindjourney.core.eventbus.observer.terminator.IObserverLifecycleTerminator
 import com.mindjourney.core.eventbus.service.IEventManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -14,44 +14,46 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Observer that generates time-based ObserverEvents based on a TimeObserverPolicy.
+ * Observer that produces time-based ObserverEvents according to a TimeObserverPolicy.
  *
- * This observer:
- *  - emits an event at regular intervals within the configured time window
- *  - stops automatically when its finishFlow emits a signal (via FinishSignalListener)
+ * Responsibilities:
+ *  - Emit events at regular intervals (policy.intervalMinutes)
+ *  - Respect the active time window (policy.start .. policy.end)
+ *  - Forward each generated ObserverEvent.TimeTick to the EventManager
+ *  - Stop observing when finishFlow emits (handled by IObserverLifecycleTerminator)
  *
- * It contains no business logic; responsibility ends with emitting events.
+ * This class contains *no* business or scheduling logic beyond the mechanical
+ * task of ticking and emitting events.
  */
 @Singleton
 class TimeObserver @Inject constructor(
     private val scope: CoroutineScope,
-    private val observerLifecycleTerminator: ObserverLifecycleTerminator
-) {
+    private val lifecycleTerminator: IObserverLifecycleTerminator
+) : ITimeObserver {
 
-    fun start(eventManager: IEventManager, context: TimeObserverContext) {
+    override fun start(eventManager: IEventManager, context: TimeObserverContext) {
         val policy = context.policy
 
-        // Main ticking job
-        val tickJob: Job = scope.launch {
+        val job: Job = scope.launch {
             while (true) {
                 val now = LocalTime.now()
 
                 if (now >= policy.start && now < policy.end) {
-                    onEvent(eventManager, now)
+                    emitEvent(eventManager, now)
                 }
 
                 delay(policy.intervalMinutes * 60_000)
             }
         }
 
-        // Listen for finish signals
-        observerLifecycleTerminator.start(
-            job = tickJob,
+        // Stop ticking when finishFlow emits
+        lifecycleTerminator.start(
+            job = job,
             finishFlow = context.finishFlow
         )
     }
 
-    private fun onEvent(eventManager: IEventManager, now: LocalTime) {
+    private fun emitEvent(eventManager: IEventManager, now: LocalTime) {
         val date = LocalDate.now()
         eventManager.onEvent(
             ObserverEvent.TimeTick(
