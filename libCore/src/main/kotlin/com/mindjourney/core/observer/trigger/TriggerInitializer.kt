@@ -5,6 +5,7 @@ import com.mindjourney.core.observer.trigger.model.IPollingTrigger
 import com.mindjourney.core.observer.trigger.model.IReactiveTrigger
 import com.mindjourney.core.observer.trigger.model.PollConfig
 import com.mindjourney.core.observer.trigger.model.TriggerDescription
+import com.mindjourney.core.observer.trigger.model.TriggerPool
 import com.mindjourney.core.observer.trigger.model.TriggerResultType
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.util.logging.injectedLogger
@@ -36,14 +37,23 @@ class TriggerInitializer(
 
     private val log = injectedLogger<TriggerInitializer>(off)
 
-    /** Entry point – determines and initializes the correct trigger type. */
+    /** Entry point – determines and initializes the correct trigger type if it is not already initialized. */
     fun init(context: TriggerContext) {
-        val description = context.description
-        when (val trigger = context.trigger) {
-            is IPollingTrigger -> initPollingTrigger( context, trigger)
-            is IReactiveTrigger -> initReactiveTrigger(description, trigger)
-            else -> log.w("Trigger:$description does not implement IPollingTrigger or IReactiveTrigger")
+        val trigger = context.trigger
+        val poolTrigger = TriggerPool.getOrCreate(trigger)
+        val description = poolTrigger.description
+        val isNewTrigger = TriggerPool.isStarted(description.name)
+
+        if (isNewTrigger) {
+            TriggerPool.markStarted(description.name)
+            when (poolTrigger) {
+                is IPollingTrigger -> initPollingTrigger(context, poolTrigger)
+                is IReactiveTrigger -> initReactiveTrigger(description, poolTrigger)
+                else -> log.w("Trigger:$description does not implement IPollingTrigger or IReactiveTrigger")
+            }
         }
+
+
     }
 
     /** Initializes and starts a PollingTrigger. */
@@ -54,12 +64,12 @@ class TriggerInitializer(
         trigger.description = context.description
 
         val tickStream = TriggerPoll.createTickStream(
-                scope,
+            scope,
             PollConfig(
                 cycles = context.pollCycles ?: PollConfig.DEFAULT.cycles,
                 intervalSec = context.pollIntervalSec ?: PollConfig.DEFAULT.intervalSec
             ),
-        context.description
+            context.description
         )
 
         scope.launch {

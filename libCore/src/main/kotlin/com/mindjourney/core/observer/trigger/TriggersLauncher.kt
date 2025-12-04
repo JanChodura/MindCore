@@ -4,8 +4,6 @@ import com.mindjourney.core.observer.trigger.model.IPollingTrigger
 import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
-import com.mindjourney.core.util.logging.on
-import kotlinx.coroutines.Job
 
 /**
  * Launches triggers using simple orchestration rules:
@@ -18,7 +16,6 @@ import kotlinx.coroutines.Job
 
 class TriggersLauncher(
     private val startTrigger: (TriggerContext) -> Unit,
-    private val getAllTriggers: () -> List<TriggerContext>,
 ) {
 
     private val log = injectedLogger<TriggersLauncher>(off)
@@ -28,19 +25,18 @@ class TriggersLauncher(
      * It cancels old jobs, splits the list, logs counts,
      * and launches triggers according to their type.
      */
-    fun launchAll() {
-        val (polling, reactive) = splitTriggersByType()
+    fun evaluate(list: List<TriggerContext>) {
+        val (polling, reactive) = splitTriggersByType(list)
         logTriggerCounts(polling.size, reactive.size)
-        launchPollingTriggers(polling)
-        launchReactiveTriggers(reactive)
+        evaluatePollingTriggers(polling)
+        evaluateReactiveTriggers(reactive)
     }
 
     /**
      * Splits all triggers into two groups: polling and reactive.
      * @return Pair of lists (polling, reactive)
      */
-    private fun splitTriggersByType(): Pair<List<TriggerContext>, List<TriggerContext>> {
-        val triggers = getAllTriggers()
+    private fun splitTriggersByType(triggers: List<TriggerContext>): Pair<List<TriggerContext>, List<TriggerContext>> {
         val (polling, reactive) = triggers.partition { it.trigger is IPollingTrigger }
         return polling to reactive
     }
@@ -56,7 +52,7 @@ class TriggersLauncher(
      * Launches all polling triggers.
      * These triggers are safe to restart and typically run on screen changes.
      */
-    private fun launchPollingTriggers(polling: List<TriggerContext>) {
+    private fun evaluatePollingTriggers(polling: List<TriggerContext>) {
         log.d("Launching polling triggers...")
         polling.forEach { startTrigger(it) }
     }
@@ -65,7 +61,7 @@ class TriggersLauncher(
      * Launches reactive triggers only if none are already active.
      * Prevents duplicate Flow collectors or multiple reactive subscriptions.
      */
-    private fun launchReactiveTriggers(reactive: List<TriggerContext>) {
+    private fun evaluateReactiveTriggers(reactive: List<TriggerContext>) {
         log.d("Launching reactive triggers...")
         reactive.forEach { startTrigger(it) }
     }

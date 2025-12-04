@@ -56,7 +56,7 @@ class TriggerReactiveManagerTest {
 
         // Assert
         consumer.results.test {
-            manager.startAllTriggers()
+            manager.evaluateTriggers()
             sourceFlow.emit(Unit)
             testScope.advanceUntilIdle()
             val result = awaitItem()

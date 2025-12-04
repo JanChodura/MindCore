@@ -6,7 +6,6 @@ import com.mindjourney.core.observer.trigger.util.TriggerContext
 import com.mindjourney.core.tracking.ScreenTrackerFactory
 import com.mindjourney.core.tracking.ScreenTracker
 import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.off
 import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -23,17 +22,17 @@ import kotlin.coroutines.EmptyCoroutineContext
  * switches to Convictions screen first page once per day.
  */
 @Singleton
-class AppScreenObserver @Inject constructor(
+class AppTrackerObserver @Inject constructor(
     private val scope: CoroutineScope,
     private val tracker: ScreenTracker,
     private val resultConsumer: TriggerResultConsumer,
 ):IAppScreenObserver {
 
-    private val log = injectedLogger<AppScreenObserver>(on)
+    private val log = injectedLogger<AppTrackerObserver>(on)
 
     companion object {
         /** Creates an empty/no-op instance of AppObserver for cases where DI is not available like Preview, Tests. */
-        fun empty(): AppScreenObserver = AppScreenObserver(
+        fun empty(): AppTrackerObserver = AppTrackerObserver(
             CoroutineScope(EmptyCoroutineContext),
             ScreenTrackerFactory.empty(),
             TriggerResultConsumer.empty()
@@ -49,7 +48,7 @@ class AppScreenObserver @Inject constructor(
     override fun init(triggersFlow: StateFlow<List<TriggerContext>>) {
         log.d("Initializing AppScreenObserver with triggersFlow of size=${triggersFlow.value.size}")
         this.triggersFlow = triggersFlow
-        triggerManager.initTriggers(triggersFlow)
+        triggerManager.registerTriggers(triggersFlow)
         observeActiveScreenTransitions()
         triggerManager.observeTriggerResults(resultConsumer)
     }
@@ -64,7 +63,7 @@ class AppScreenObserver @Inject constructor(
                 .distinctUntilChangedBy { it }
                 .collectLatest { screen ->
                     log.d("Screen changed → $screen, evaluating triggers")
-                    triggerManager.startAllTriggers()
+                    triggerManager.evaluateTriggers()
                 }
         }
     }

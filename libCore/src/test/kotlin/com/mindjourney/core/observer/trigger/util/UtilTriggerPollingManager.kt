@@ -17,7 +17,7 @@ object UtilTriggerManager {
 
         val flow = MutableStateFlow(contexts)
 
-        manager.initTriggers(flow)
+        manager.registerTriggers(flow)
 
         return manager
     }

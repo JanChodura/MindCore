@@ -28,10 +28,9 @@ open class ReactiveHandler(
         log.d("Initializing Reactive handler. isInitialized=$isInitialized")
         if (isInitialized) return
 
+        setupTriggerSources()
         initializeTriggerSystemInitializer()
-        observeScreen()
         observeTriggerInitialization()
-        observeCustomTriggers()
         isInitialized = true
     }
 
@@ -40,23 +39,10 @@ open class ReactiveHandler(
         jobs.clear()
     }
 
-    override fun updateTriggers() {
-        observeCustomTriggers()
-    }
-
-    private fun observeScreen() {
-        val job = scope.launch {
-            val baseScreen = ctx.screenTracker.activeScreen.value
-
-            ctx.screenTracker.state.activeScreen.collect { screen ->
-                log.d("ReactiveHandler: Observed active screen change to $screen")
-                if (screen == baseScreen) {
-                    log.d("ReactiveHandler: Active screen matches base screen. Invoking onScreenActive.")
-                    onScreenActive()
-                }
-            }
+    private fun setupTriggerSources() {
+        ctx.triggersContext = ctx.triggersContext.map { trigger ->
+            trigger.copy(description = trigger.description.copy(source = ctx.source))
         }
-        jobs += job
     }
 
     private fun observeTriggerInitialization() {
@@ -69,7 +55,7 @@ open class ReactiveHandler(
                 .filter { it }
                 .take(1)
                 .collect {
-                    log.d("ReactiveHandler: Trigger system is ready in source=${ctx.source}")
+                    log.d("Trigger system is ready in source=${ctx.source}")
                     onReady()
                 }
         }
@@ -82,15 +68,8 @@ open class ReactiveHandler(
         val initializer = ViewModelTriggerSystemInitializer(
             ctx = ctx,
         )
-        log.d("ReactiveHandler: Initializing trigger system initializer for source=${ctx.source}")
-        initializer.initObservingTriggersIn()
-    }
-
-    private fun observeCustomTriggers() {
-        // později doplníme – přesuneme:
-        // - ScreenWithPagerReselectTrigger
-        // - MorningResetTrigger
-        // - ActiveScreenReadinessTrigger
+        log.d("Initializing trigger system initializer for source=${ctx.source}")
+        initializer.initObserving()
     }
 
     override fun <T : IAppTrigger> observeTriggerReadiness(
@@ -101,12 +80,12 @@ open class ReactiveHandler(
             .firstOrNull { triggerClass.isInstance(it.trigger) }
             ?.trigger as? T ?: return
 
-        log.d("ReactiveHandler: Observing readiness for trigger: ${trigger.description}")
+        log.d("Observing readiness for trigger: ${trigger.description}")
         val job = scope.launch {
             trigger.isReady
                 .onStart {
                     if (trigger.isReady.value) {
-                        log.d("ReactiveHandler: Trigger ${triggerClass.simpleName} is already ready on start.")
+                        log.d("Trigger ${triggerClass.simpleName} is already ready on start.")
                         onTriggerReady()
                         onReady()
                     }
@@ -114,7 +93,7 @@ open class ReactiveHandler(
                 .filter { it }
                 .take(1)
                 .collect {
-                    log.d("ReactiveHandler: Trigger ${triggerClass.simpleName} became ready.")
+                    log.d("Trigger ${triggerClass.simpleName} became ready.")
                     onTriggerReady()
                     onReady()
                 }

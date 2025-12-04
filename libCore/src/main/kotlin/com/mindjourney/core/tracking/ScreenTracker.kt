@@ -8,7 +8,6 @@ import com.mindjourney.core.tracking.state.NavigationReadinessTracker
 import com.mindjourney.core.tracking.state.ScreenStateHolder
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
-import com.mindjourney.core.util.logging.on
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -61,23 +60,17 @@ class ScreenTracker @Inject constructor(
      */
     fun setActiveScreen(screen: CoreScreen) {
         val previous = getPrevious()
-        val isReselected = screen == previous
-        log.d("counter: ${state.activeScreenChangeCounter.value.changeCount}")
-        log.d("Request to set active screen to '${screen.title}' (previous='${previous.title}', isReselect=$isReselected)")
-        if (isReselected && state.activeScreenChangeCounter.value.changeCount == 1) {
-            log.d("Reselection. It was already select")
-            return
-        }
-
-        if (isReselected) {
+        val isReselectable = screen == previous
+        if (isReselectable) {
             log.d("Active screen is reselected")
             reselectScreen(screen)
-        } else {
-            state.setActiveScreen(screen)
-            addToHistory(screen)
-            log.d("Active screen changed from '${previous.title}' to '${screen.title}'")
+            return
         }
+        state.setActiveScreen(screen)
+        addToHistory(screen)
+        log.d("Active screen changed from '${previous.title}' to '${screen.title}'")
         bus.emitScreenChanged(screen)
+
     }
 
     private fun addToHistory(screen: CoreScreen) {
@@ -87,7 +80,7 @@ class ScreenTracker @Inject constructor(
 
     private fun reselectScreen(screen: CoreScreen) {
         state.nextScreenChange()
-        reselect.handleScreenChange(state.activeScreenChangeCounter.value)
+        reselect.handleScreenChange()
         log.d("Re-selecting the same screen='${screen.title}'")
     }
 

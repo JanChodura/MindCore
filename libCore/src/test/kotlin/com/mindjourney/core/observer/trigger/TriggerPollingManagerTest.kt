@@ -53,7 +53,7 @@ class TriggerPollingManagerTest {
         manager.triggerResult
             .drop(1) // Skip initial None
             .test {
-                manager.startAllTriggers()
+                manager.evaluateTriggers()
                 advanceTimeBy(2000)
                 val result = awaitItem()
                 assertEquals(expectedResult, result)

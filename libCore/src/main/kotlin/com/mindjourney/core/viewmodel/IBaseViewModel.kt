@@ -23,13 +23,6 @@ import com.mindjourney.core.viewmodel.helper.INavigationFacade
 interface IBaseViewModel {
 
     /**
-     * True when the current screen has been reselected.
-     * Used by ViewModel to react appropriately (e.g. scroll-to-top,
-     * reset pager, refresh entries).
-     */
-    val isReselectHappened: Boolean
-
-    /**
      * Navigation façade providing high-level navigation commands.
      * ViewModel never calls NavigationDispatcher directly.
      */

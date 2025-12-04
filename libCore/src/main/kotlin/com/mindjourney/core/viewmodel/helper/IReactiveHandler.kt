@@ -36,12 +36,6 @@ interface IReactiveHandler {
     fun clear()
 
     /**
-     * Re-binds trigger observers when the set of triggers changes.
-     * Typically called after screen changes or updates to the trigger configuration.
-     */
-    fun updateTriggers()
-
-    /**
      * Observes readiness of a specific trigger type.
      *
      * When the first trigger of the given class reports readiness (isReady == true),

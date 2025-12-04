@@ -17,19 +17,7 @@ class ViewModelTriggerSystemInitializer(
     /**
      * Public entry point for initializing trigger observation for given ViewModel.
      */
-    fun initObservingTriggersIn() {
-        setupTriggerSources()
-        initObserverForVM()
-    }
-
-    private fun setupTriggerSources() {
-        ctx.triggersContext.forEach { triggerContext ->
-            triggerContext.description.source = ctx.source
-            log.d("Setting up source for trigger: ${triggerContext.description}")
-        }
-    }
-
-    private fun initObserverForVM() {
+    fun initObserving() {
         ctx.observer.init(MutableStateFlow(ctx.triggersContext))
     }
 }

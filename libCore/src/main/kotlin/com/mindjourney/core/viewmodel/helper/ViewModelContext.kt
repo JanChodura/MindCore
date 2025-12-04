@@ -18,5 +18,5 @@ class ViewModelContext(
     var source: String = "unknown",
     val screenTracker: ScreenTracker,
     val observer: IAppScreenObserver,
-    val triggersContext: List<TriggerContext>
+    var triggersContext: List<TriggerContext>
 )

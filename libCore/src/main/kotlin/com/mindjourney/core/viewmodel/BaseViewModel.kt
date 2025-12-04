@@ -1,6 +1,7 @@
 package com.mindjourney.core.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.mindjourney.core.util.logging.on
 import com.mindjourney.core.viewmodel.helper.INavigationFacade
 import com.mindjourney.core.viewmodel.helper.IReactiveHandler
 import com.mindjourney.core.viewmodel.helper.ReactiveHandler
@@ -11,14 +12,12 @@ abstract class BaseViewModel(
     override val navigationFcd: INavigationFacade,
 ) : ViewModel(), IBaseViewModel {
 
+    private val log = com.mindjourney.core.util.logging.injectedLogger<BaseViewModel>(on)
     abstract val ctx: ViewModelContext
 
     protected lateinit var reactiveManager: IReactiveHandler
 
     protected var isFirstActivation = true
-
-    override val isReselectHappened: Boolean
-        get() = ctx.screenTracker.reselect.isReselectHappened
 
     protected open fun onScreenBecameActive() {}
 
@@ -29,6 +28,7 @@ abstract class BaseViewModel(
      */
     protected fun initReactiveManager(viewModelScope: CoroutineScope) {
         ctx.source = this::class.simpleName ?: "BaseViewModel"
+        log.d("Initializing BaseViewModel reactive manager for source: ${ctx.source}")
         reactiveManager = ReactiveHandler(
             ctx,
             viewModelScope,

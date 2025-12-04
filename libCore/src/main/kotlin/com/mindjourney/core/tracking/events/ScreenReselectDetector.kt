@@ -1,9 +1,10 @@
 package com.mindjourney.core.tracking.events
 
-import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.tracking.model.ScreenChangeCounter
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.on
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Determines whether the current screen was reselected based on its [ScreenChangeCounter].
@@ -15,26 +16,17 @@ import com.mindjourney.core.util.logging.on
  * - The controller itself does not emit events — it just interprets counter data.
  *
  * ---
- * ### Logic
- * - When [changeCount] > 0, reselection is considered to have happened.
- * - Otherwise, it's the first activation of the screen.
- *
  */
 class ScreenReselectDetector() {
 
     private val log = injectedLogger<ScreenReselectDetector>(on)
 
-    private var _isReselectHappened = false
-    val isReselectHappened: Boolean get() = _isReselectHappened
+    private var _isReselectHappened = MutableStateFlow<Int>(0)
+    val isReselectHappened: StateFlow<Int> = _isReselectHappened
 
-    /**
-     * Evaluates whether reselection occurred for the current screen based on [counter].
-     */
-    fun handleScreenChange(counter: ScreenChangeCounter): Boolean {
-        _isReselectHappened = counter.changeCount > 0
-        if (_isReselectHappened) {
-            log.d("Reselection detected for screen=${counter.screen.title}, count=${counter.changeCount}")
-        }
-        return _isReselectHappened
+    fun handleScreenChange() {
+        val oldValue = _isReselectHappened.value
+        _isReselectHappened.value = oldValue + 1
+        log.d("Reselection detected for: ${_isReselectHappened.value}")
     }
 }

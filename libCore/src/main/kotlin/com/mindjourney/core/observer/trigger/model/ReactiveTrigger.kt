@@ -2,6 +2,7 @@ package com.mindjourney.core.observer.trigger.model
 
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
+import com.mindjourney.core.util.logging.on
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +30,7 @@ abstract class ReactiveTrigger<T>(
     override val sourceFlow: Flow<T>,
 ) : FlowBasedTrigger<T>(), IReactiveTrigger {
 
-    private val log = injectedLogger<ReactiveTrigger<T>>(off)
+    private val log = injectedLogger<ReactiveTrigger<T>>(on)
 
     /**
      * Internal readiness state exposed via [isReady] once the trigger

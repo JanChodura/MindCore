@@ -39,8 +39,10 @@ class TriggerManager(
     val triggerResult: SharedFlow<TriggerResult> = _triggerResult
 
     private val triggersLauncher = TriggersLauncher(
-        startTrigger = { triggerSelector.init(it) },
-        getAllTriggers = { triggers },
+        startTrigger = {
+            log.d("Starting trigger: ${it.trigger.description.name}")
+            triggerSelector.init(it)
+        }
     )
 
     private val triggerSelector = TriggerInitializer(scope) { trigger, resultType ->
@@ -50,16 +52,26 @@ class TriggerManager(
     }
 
     /** Initializes triggers*/
-    fun initTriggers(triggersFlow: StateFlow<List<TriggerContext>> = MutableStateFlow(emptyList())) {
-        log.d("Initializing triggers from flow of size=${triggersFlow?.value?.size ?: 0}")
+    fun registerTriggers(triggersFlow: StateFlow<List<TriggerContext>> = MutableStateFlow(emptyList())) {
+        log.d("Initializing triggers from flow of size=${triggersFlow.value.size}")
         triggers.clear()
-        triggers.addAll(triggersFlow.value.map { ctx -> ctx.copy(trigger = TriggerPool.getOrCreate(ctx.trigger)) })
+        triggers.addAll(triggersFlow.value)
     }
 
     /** Starts processing all triggers, deciding between polling and reactive modes. */
-    fun startAllTriggers() {
-        log.d("Starting all triggers. Total triggers=${triggers.size}")
-        triggersLauncher.launchAll()
+    fun evaluateTriggers() {
+
+        val toStart = triggers.filter { ctx ->
+            val key = ctx.trigger.description.name
+            !TriggerPool.isStarted(key)
+        }
+        toStart.forEach { ctx ->
+            val key = ctx.trigger.description.name
+            TriggerPool.markStarted(key)
+        }
+
+        log.d("Starting triggers:${toStart.size}. Already started triggers:${triggers.size - toStart.size}")
+        triggersLauncher.evaluate(toStart)
     }
 
 
