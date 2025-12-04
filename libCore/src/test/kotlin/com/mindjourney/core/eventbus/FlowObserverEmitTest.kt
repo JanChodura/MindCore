@@ -3,10 +3,10 @@ package com.mindjourney.core.eventbus
 import app.cash.turbine.test
 import com.mindjourney.core.eventbus.model.event.ObserverEvent
 import com.mindjourney.core.eventbus.model.event.context.FlowObserverContext
-import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
 import com.mindjourney.core.eventbus.model.trigger.result.TriggerResultType
 import com.mindjourney.core.eventbus.observer.FlowObserver
 import com.mindjourney.core.eventbus.service.EventManager
+import com.mindjourney.core.eventbus.testutil.NoopTerminator
 import com.mindjourney.core.eventbus.testutil.SimpleFlowTestTrigger
 import com.mindjourney.core.eventbus.testutil.TestTriggerResultConsumer
 import com.mindjourney.core.eventbus.testutil.UtilTriggerContext
@@ -21,7 +21,7 @@ import kotlin.test.assertEquals
  * Tests full event pipeline:
  * Flow → FlowObserver → EventManager → Trigger → TriggerResultConsumer
  */
-class FlowObserverTest {
+class FlowObserverEmitTest {
 
     @Test
     fun flowObserverEmitsTriggerResultWhenFlowChanges() = runTest {
@@ -37,11 +37,11 @@ class FlowObserverTest {
         val trigger = SimpleFlowTestTrigger(expectedType)
 
         // Define event mapping
-        val triggerContext = UtilTriggerContext.create()
+        val triggerContext = UtilTriggerContext.create(trigger)
         eventManager.register(triggerContext)
 
         // FlowObserver
-        val observer = FlowObserver(scope, null) // null terminator for test
+        val observer = FlowObserver(scope, NoopTerminator())
         val flowContext = FlowObserverContext(
             flow = sourceFlow,
             mapToEvent = { value -> ObserverEvent.FlowChanged(value) },
