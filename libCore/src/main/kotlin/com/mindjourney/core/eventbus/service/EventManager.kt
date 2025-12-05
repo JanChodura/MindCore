@@ -37,7 +37,7 @@ class EventManager @Inject constructor(
         val triggers = bindings[event::class.java] ?: return
 
         triggers.forEach { trigger ->
-            if (trigger.isReady.value) {
+            if (trigger.isCompleted.value) {
                 executeTrigger(trigger, event)
             }
         }
