@@ -29,17 +29,17 @@ sealed class ObserverEvent {
      * Rich time-based system event carrying exact timestamp information.
      *
      * Emitted by TimeObserver according to a declarative TimeObserverPolicy.
-     * Contains enough metadata for triggers to evaluate:
-     *  - daily or weekly routines (e.g., weekday morning start)
-     *  - time-of-day–based actions
-     *  - scheduled domain workflows
+     * Provides enough metadata for triggers to evaluate:
+     *  - daily, weekday-only, or custom day-of-week routines
+     *  - time-of-day based actions within a defined window
+     *  - scheduled domain workflows spanning multiple days
      *
      * This event is purely informational. All interpretation — such as
-     * “is this 07:00 on a weekday?” — belongs exclusively to triggers.
+     * “is this within a weekday morning window?” — belongs exclusively to triggers.
      */
     data class TimeTick(
         val date: LocalDate,
         val time: LocalTime,
-        val dayOfWeek: DayOfWeek
+        val daysOfWeek: Set<DayOfWeek> = DayOfWeek.entries.toSet()
     ) : ObserverEvent()
 }
