@@ -1,9 +1,6 @@
 package com.mindjourney.core.eventbus.model.event.context
 
 import com.mindjourney.core.eventbus.model.event.ObserverEvent
-import com.mindjourney.core.eventbus.model.event.context.TimeObserverPolicy
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
 /**
  * Configuration for a TimeObserver responsible for generating ObserverEvents
@@ -23,6 +20,4 @@ data class TimeObserverContext(
 
     /** The ObserverEvent produced by this time-based observer. */
     override val event: ObserverEvent,
-
-    override val finishFlow: Flow<Unit> = emptyFlow()
 ) : ObserverContext()
