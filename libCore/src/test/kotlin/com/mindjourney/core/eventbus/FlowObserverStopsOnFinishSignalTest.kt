@@ -9,9 +9,9 @@ import com.mindjourney.core.eventbus.observer.terminator.IObserverLifecycleTermi
 import com.mindjourney.core.eventbus.service.IEventManager
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
@@ -44,7 +44,10 @@ class FlowObserverStopsOnFinishSignalTest {
         // lifecycle termination observer that records whether job was cancelled
         var jobCancelled = false
         val terminator = object : IObserverLifecycleTerminator {
-            override fun start(job: Job, finishFlow: Flow<Unit>) {
+            override val terminatedFlow: Flow<Unit>
+                get() = MutableStateFlow(Unit)
+
+            override fun tryTerminate(job: Job, finishFlow: Flow<Unit>) {
                 this@runTest.launch {
                     finishFlow.first()
                     jobCancelled = true
