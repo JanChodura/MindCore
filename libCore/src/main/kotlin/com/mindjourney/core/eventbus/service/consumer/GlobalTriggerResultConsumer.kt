@@ -7,12 +7,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 
 @Singleton
-class GlobalTriggerResultConsumer @Inject constructor() : TriggerResultConsumerSync {
+class GlobalTriggerResultConsumer @Inject constructor() : TriggerResultConsumer {
 
     private val _results = MutableSharedFlow<TriggerResult>(extraBufferCapacity = 64)
     val results: SharedFlow<TriggerResult> = _results
 
-    override fun consume(result: TriggerResult, callback: () -> Unit) {
+    override fun consume(result: TriggerResult, useCaseCallback: () -> Unit) {
         _results.tryEmit(result)
     }
 }
