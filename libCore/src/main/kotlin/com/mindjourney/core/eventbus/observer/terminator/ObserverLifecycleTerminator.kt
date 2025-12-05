@@ -5,6 +5,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Utility that listens to a finish signal and cancels a running coroutine job.
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
  * Observers use this to support externally controlled shutdown.
  * No event logic or business behaviour is performed here.
  */
-class ObserverLifecycleTerminator(
+class ObserverLifecycleTerminator @Inject constructor(
     private val scope: CoroutineScope
 ) : IObserverLifecycleTerminator {
 

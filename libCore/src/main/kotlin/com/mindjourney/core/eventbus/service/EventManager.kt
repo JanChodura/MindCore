@@ -1,10 +1,11 @@
 package com.mindjourney.core.eventbus.service
 
-import com.mindjourney.core.eventbus.consumer.TriggerResultConsumer
 import com.mindjourney.core.eventbus.model.event.ObserverEvent
 import com.mindjourney.core.eventbus.model.trigger.IAppTrigger
 import com.mindjourney.core.eventbus.model.trigger.TriggerResult
 import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
+import com.mindjourney.core.eventbus.service.consumer.TriggerResultConsumer
+import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
  *  - wrap returned TriggerResultType into a full TriggerResult
  *  - deliver results to TriggerResultConsumer
  */
-class EventManager(
+class EventManager @Inject constructor(
     private val scope: CoroutineScope,
     private val consumer: TriggerResultConsumer
 ) : IEventManager {
