@@ -1,4 +1,4 @@
-package com.mindjourney.core.eventbus.consumer
+package com.mindjourney.core.eventbus.service.consumer
 
 import com.mindjourney.core.eventbus.model.trigger.TriggerResult
 
