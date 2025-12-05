@@ -23,7 +23,6 @@ import javax.inject.Singleton
  * This class contains *no business logic*. It is purely a mechanical bridge
  * Flow<T> → ObserverEvent → EventManager.
  */
-@Singleton
 class FlowObserver @Inject constructor(
     private val scope: CoroutineScope, private val lifecycleTerminator: IObserverLifecycleTerminator?
 ) : IFlowObserver {
@@ -42,6 +41,6 @@ class FlowObserver @Inject constructor(
         }
 
         // Lifecycle-controlled termination
-        lifecycleTerminator.start(job, context.finishFlow)
+        lifecycleTerminator.tryTerminate(job, context.finishFlow)
     }
 }

@@ -12,7 +12,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Observer that produces time-based ObserverEvents according to a TimeObserverPolicy.
@@ -47,7 +46,7 @@ class TimeObserver @Inject constructor(
         }
 
         // Stop ticking when finishFlow emits
-        lifecycleTerminator.start(
+        lifecycleTerminator.tryTerminate(
             job = job,
             finishFlow = context.finishFlow
         )

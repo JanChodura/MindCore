@@ -3,6 +3,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,13 +18,17 @@ class ObserverLifecycleTerminator @Inject constructor(
     private val scope: CoroutineScope
 ) : IObserverLifecycleTerminator {
 
+    private val _finishFlow = MutableSharedFlow<Unit>()
+    override val terminatedFlow: Flow<Unit> get() = _finishFlow
+
     /**
      * Cancels [job] when [finishFlow] emits a value.
      */
-    override fun start(job: Job, finishFlow: Flow<Unit>) {
+    override fun tryTerminate(job: Job, finishFlow: Flow<Unit>) {
         scope.launch {
             finishFlow.collectLatest {
                 job.cancel()
+                _finishFlow.emit(Unit)
                 this.cancel() // stop listener
             }
         }

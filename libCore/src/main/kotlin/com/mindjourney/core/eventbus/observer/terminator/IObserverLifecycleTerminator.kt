@@ -17,8 +17,14 @@ import kotlinx.coroutines.flow.Flow
 interface IObserverLifecycleTerminator {
 
     /**
+     * Flow that emits when an observer lifecycle should terminate.
+     * Useful for event chains that need to know when an observer has finished.
+     */
+    val terminatedFlow: Flow<Unit>
+
+    /**
      * Starts monitoring [finishFlow], and cancels [job] once the flow emits.
      * Implementations decide how the monitoring coroutine is launched.
      */
-    fun start(job: Job, finishFlow: Flow<Unit>)
+    fun tryTerminate(job: Job, finishFlow: Flow<Unit>)
 }
