@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
@@ -25,7 +26,6 @@ import javax.inject.Singleton
  * This class contains *no* business or scheduling logic beyond the mechanical
  * task of ticking and emitting events.
  */
-@Singleton
 class TimeObserver @Inject constructor(
     private val scope: CoroutineScope,
     private val lifecycleTerminator: IObserverLifecycleTerminator
@@ -59,7 +59,7 @@ class TimeObserver @Inject constructor(
             ObserverEvent.TimeTick(
                 date = date,
                 time = now,
-                dayOfWeek = date.dayOfWeek
+                daysOfWeek = DayOfWeek.entries.toSet()
             )
         )
     }
