@@ -23,7 +23,11 @@ sealed class ObserverEvent {
      */
     data class FlowChanged<T>(
         val value: T
-    ) : ObserverEvent()
+    ) : ObserverEvent() {
+        companion object {
+            val TYPE = FlowChanged(Unit)
+        }
+    }
 
     /**
      * Rich time-based system event carrying exact timestamp information.
@@ -41,5 +45,9 @@ sealed class ObserverEvent {
         val date: LocalDate,
         val time: LocalTime,
         val daysOfWeek: Set<DayOfWeek> = DayOfWeek.entries.toSet()
-    ) : ObserverEvent()
+    ) : ObserverEvent() {
+        companion object {
+            val TYPE = TimeTick(LocalDate.MIN, LocalTime.MIN)
+        }
+    }
 }
