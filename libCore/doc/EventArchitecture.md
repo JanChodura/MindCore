@@ -1,4 +1,4 @@
-# Observer–Event–Trigger Architecture
+# Event - Observer–Trigger Architecture
 
 This document defines the unified architecture for observer-driven event processing and trigger
 execution. It describes how observers emit events, how events are dispatched, and how triggers
