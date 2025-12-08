@@ -1,8 +1,7 @@
 package com.mindjourney.core.tracking.state
 
-import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.on
+import com.mindjourney.core.util.logging.off
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -37,7 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
  */
 class NavigationReadinessTracker() {
 
-    private val log = injectedLogger<NavigationReadinessTracker>(on)
+    private val log = injectedLogger<NavigationReadinessTracker>(off)
 
     // Internal state flags
     private val _isNavHostReady = MutableStateFlow(false)
