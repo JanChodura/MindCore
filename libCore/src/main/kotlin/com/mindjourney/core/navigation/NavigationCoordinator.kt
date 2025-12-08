@@ -6,7 +6,7 @@ import com.mindjourney.core.tracking.model.CoreScreen
 import com.mindjourney.core.util.logging.injectedLogger
 import com.mindjourney.core.util.logging.off
 import com.mindjourney.core.util.logging.on
-import javax.inject.Inject
+import jakarta.inject.Inject
 import javax.inject.Singleton
 
 @Singleton

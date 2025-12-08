@@ -3,7 +3,7 @@ package com.mindjourney.core.eventbus.observer.initializer
 import com.mindjourney.core.eventbus.observer.FlowObserver
 import com.mindjourney.core.eventbus.observer.TimeObserver
 import com.mindjourney.core.eventbus.service.IEventManager
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 /**
  * Initializes observers that belong to a specific domain component,

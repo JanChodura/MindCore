@@ -4,7 +4,7 @@ import com.mindjourney.core.eventbus.model.event.context.ObserverContext
 import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
 import com.mindjourney.core.eventbus.observer.initializer.DomainObserverInitializer
 import dagger.hilt.android.scopes.ViewModelScoped
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 @ViewModelScoped
 class DomainEventBundle @Inject constructor(

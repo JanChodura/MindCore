@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 /**
  * Observer that produces time-based ObserverEvents according to a TimeObserverPolicy.

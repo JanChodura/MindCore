@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalTime
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 /**
  * A repository that uses DataStore to store and retrieve data. It can be used with more specific dataStore repositories.

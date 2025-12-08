@@ -2,7 +2,7 @@ package com.mindjourney.core.util.logging
 
 import android.util.Log
 import com.mindjourney.core.logger.ILoggerConfig
-import javax.inject.Inject
+import jakarta.inject.Inject
 import javax.inject.Singleton
 
 @Singleton

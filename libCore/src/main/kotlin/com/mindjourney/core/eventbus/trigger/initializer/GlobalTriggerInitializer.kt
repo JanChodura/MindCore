@@ -2,7 +2,7 @@ package com.mindjourney.core.eventbus.trigger.initializer
 
 import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
 import com.mindjourney.core.eventbus.service.IEventManager
-import javax.inject.Inject
+import jakarta.inject.Inject
 import javax.inject.Singleton
 
 /**
