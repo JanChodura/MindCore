@@ -1,4 +1,4 @@
-package com.mindjourney.core.eventbus.trigger
+package com.mindjourney.core.eventbus.trigger.initializer
 
 import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
 
