@@ -24,7 +24,7 @@ import jakarta.inject.Singleton
 
 @Singleton
 class GlobalObserverInitializer @Inject constructor(
-    private val contexts: List<ObserverContext>,
+    private val contexts: List<@JvmSuppressWildcards ObserverContext>,
     private val eventManager: IEventManager,
     private val flowObserver: FlowObserver,
     private val timeObserver: TimeObserver,
