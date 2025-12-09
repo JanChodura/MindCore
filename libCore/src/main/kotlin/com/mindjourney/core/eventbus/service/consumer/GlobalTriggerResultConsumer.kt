@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 
 @Singleton
-class GlobalTriggerResultConsumer @Inject constructor() : TriggerResultConsumer {
+class GlobalTriggerResultConsumer @Inject constructor() : IGlobalTriggerResultConsumer {
 
     private val _results = MutableSharedFlow<TriggerResult>(extraBufferCapacity = 64)
     val results: SharedFlow<TriggerResult> = _results
