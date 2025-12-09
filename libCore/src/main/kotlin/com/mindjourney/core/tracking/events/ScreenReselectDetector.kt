@@ -2,6 +2,7 @@ package com.mindjourney.core.tracking.events
 
 import com.mindjourney.core.tracking.model.ScreenChangeCounter
 import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.off
 import com.mindjourney.core.logger.service.on
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
  */
 class ScreenReselectDetector() {
 
-    private val log = injectedLogger<ScreenReselectDetector>(on)
+    private val log = injectedLogger<ScreenReselectDetector>(off)
 
     private var _isReselectHappened = MutableStateFlow<Int>(0)
     val isReselectHappened: StateFlow<Int> = _isReselectHappened

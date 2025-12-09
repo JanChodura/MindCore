@@ -3,6 +3,9 @@
 package com.mindjourney.core.eventbus.service.reactive
 
 import com.mindjourney.core.eventbus.model.trigger.TriggerResult
+import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.off
+import com.mindjourney.core.logger.service.on
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
@@ -20,6 +23,7 @@ import javax.inject.Singleton
 @Singleton
 class TriggerResultBus @Inject constructor() {
 
+    private val log = injectedLogger<TriggerResultBus>(off)
     private val _results = MutableSharedFlow<TriggerResult>(extraBufferCapacity = 64)
     val results: SharedFlow<TriggerResult> = _results
 
@@ -27,6 +31,7 @@ class TriggerResultBus @Inject constructor() {
      * Called by EventManager to deliver a TriggerResult to the global mailbox.
      */
     suspend fun publish(result: TriggerResult) {
+        log.d("Publishing TriggerResult: $result")
         _results.emit(result)
     }
 }

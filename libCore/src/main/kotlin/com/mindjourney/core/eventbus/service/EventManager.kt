@@ -6,6 +6,7 @@ import com.mindjourney.core.eventbus.model.trigger.TriggerResult
 import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
 import com.mindjourney.core.eventbus.service.reactive.TriggerResultBus
 import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.off
 import com.mindjourney.core.logger.service.on
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +27,7 @@ class EventManager @Inject constructor(
     private val triggerResultBus: TriggerResultBus
 ) : IEventManager {
 
-    private val log = injectedLogger<EventManager>(on)
+    private val log = injectedLogger<EventManager>(off)
     private val bindings = mutableMapOf<Class<out ObserverEvent>, MutableList<IAppTrigger>>()
 
     /** Register trigger-event association */
@@ -41,7 +42,8 @@ class EventManager @Inject constructor(
         val triggers = bindings[event::class.java] ?: return
 
         triggers.forEach { trigger ->
-            if (trigger.isCompleted.value) {
+            log.d("Dispatching event: $event to trigger: ${trigger.description}, isCompleted=${trigger.isCompleted.value}")
+            if (!trigger.isCompleted.value) {
                 log.d("Trigger already completed: ${trigger.description}, skipping execution.")
                 executeTrigger(trigger, event)
             }

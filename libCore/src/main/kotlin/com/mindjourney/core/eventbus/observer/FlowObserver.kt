@@ -3,6 +3,9 @@ package com.mindjourney.core.eventbus.observer
 import com.mindjourney.core.eventbus.model.event.context.FlowObserverContext
 import com.mindjourney.core.eventbus.observer.terminator.IObserverLifecycleTerminator
 import com.mindjourney.core.eventbus.service.IEventManager
+import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.off
+import com.mindjourney.core.logger.service.on
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
@@ -27,6 +30,8 @@ class FlowObserver @Inject constructor(
     private val scope: CoroutineScope, private val lifecycleTerminator: IObserverLifecycleTerminator?
 ) : IFlowObserver {
 
+    private val log = injectedLogger<FlowObserver>(off)
+
     override fun <T> start(eventManager: IEventManager, context: FlowObserverContext<T>) {
         // If no terminator is injected (e.g., in previews or tests), do nothing.
         lifecycleTerminator ?: return
@@ -35,6 +40,7 @@ class FlowObserver @Inject constructor(
             context.flow.collectLatest { value ->
                 val event = context.mapToEvent(value)
                 if (event != null) {
+                    log.d("FlowObserver emitting event: $event from value: $value")
                     eventManager.onEvent(event)
                 }
             }
