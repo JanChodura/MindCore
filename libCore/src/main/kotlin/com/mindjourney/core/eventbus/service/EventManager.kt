@@ -4,7 +4,9 @@ import com.mindjourney.core.eventbus.model.event.ObserverEvent
 import com.mindjourney.core.eventbus.model.trigger.IAppTrigger
 import com.mindjourney.core.eventbus.model.trigger.TriggerResult
 import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
-import com.mindjourney.core.eventbus.service.consumer.TriggerResultConsumer
+import com.mindjourney.core.eventbus.service.reactive.TriggerResultBus
+import com.mindjourney.core.util.logging.injectedLogger
+import com.mindjourney.core.util.logging.on
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -17,13 +19,14 @@ import kotlinx.coroutines.launch
  *  - dispatch incoming ObserverEvents to the correct triggers
  *  - invoke triggers
  *  - wrap returned TriggerResultType into a full TriggerResult
- *  - deliver results to TriggerResultConsumer
+ *  - deliver results to bus for further processing
  */
 class EventManager @Inject constructor(
     private val scope: CoroutineScope,
-    private val consumer: TriggerResultConsumer
+    private val triggerResultBus: TriggerResultBus
 ) : IEventManager {
 
+    private val log = injectedLogger<EventManager>(on)
     private val bindings = mutableMapOf<Class<out ObserverEvent>, MutableList<IAppTrigger>>()
 
     /** Register trigger-event association */
@@ -34,10 +37,12 @@ class EventManager @Inject constructor(
 
     /** Dispatch event to all registered triggers */
     override fun onEvent(event: ObserverEvent) {
+        log.d("Event received: $event")
         val triggers = bindings[event::class.java] ?: return
 
         triggers.forEach { trigger ->
             if (trigger.isCompleted.value) {
+                log.d("Trigger already completed: ${trigger.description}, skipping execution.")
                 executeTrigger(trigger, event)
             }
         }
@@ -54,7 +59,8 @@ class EventManager @Inject constructor(
                 triggeredBy = event
             )
 
-            consumer.consume(result)
+            log.d("Trigger executed: ${trigger.description}, Result: $result")
+            triggerResultBus.publish(result)
         }
     }
 }

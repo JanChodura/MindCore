@@ -1,4 +1,4 @@
-package com.mindjourney.core.eventbus.service.consumer
+package com.mindjourney.core.eventbus.service.reactive.consumer
 
 import com.mindjourney.core.eventbus.model.trigger.TriggerResult
 import jakarta.inject.Inject

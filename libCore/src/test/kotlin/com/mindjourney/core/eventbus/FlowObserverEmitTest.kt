@@ -7,7 +7,7 @@ import com.mindjourney.core.eventbus.model.trigger.SimpleEagerTrigger
 import com.mindjourney.core.eventbus.model.trigger.result.TriggerResultType
 import com.mindjourney.core.eventbus.observer.FlowObserver
 import com.mindjourney.core.eventbus.service.EventManager
-import com.mindjourney.core.eventbus.service.consumer.GlobalTriggerResultConsumer
+import com.mindjourney.core.eventbus.service.reactive.consumer.GlobalTriggerResultConsumer
 import com.mindjourney.core.eventbus.testutil.NoopTerminator
 import com.mindjourney.core.eventbus.testutil.UtilTriggerContext
 import kotlinx.coroutines.flow.MutableSharedFlow
