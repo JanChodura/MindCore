@@ -9,7 +9,7 @@ import jakarta.inject.Inject
 class DomainEventBusInitializer @Inject constructor(
     private val triggerInitializer: DomainTriggerInitializer,
     private val observerInitializer: DomainObserverInitializer,
-    private val eventBundle: DomainEventBundle
+    private val eventBundle: IDomainEventBundle
 ) : IDomainEventBusInitializer {
 
     override fun initialize() {
