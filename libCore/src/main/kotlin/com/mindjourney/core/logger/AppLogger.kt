@@ -1,7 +1,8 @@
-package com.mindjourney.core.util.logging
+package com.mindjourney.core.logger
 
 import android.util.Log
-import com.mindjourney.core.logger.ILoggerConfig
+import com.mindjourney.core.logger.config.ILoggerConfig
+import com.mindjourney.core.logger.service.LogDebugSwitch
 import jakarta.inject.Inject
 import javax.inject.Singleton
 

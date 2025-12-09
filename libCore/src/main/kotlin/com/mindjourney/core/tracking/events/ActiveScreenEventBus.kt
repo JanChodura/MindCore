@@ -1,10 +1,8 @@
 package com.mindjourney.core.tracking.events
 
-import com.mindjourney.core.logger.LoggerProvider
 import com.mindjourney.core.tracking.model.CoreScreen
-import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.off
-import com.mindjourney.core.util.logging.on
+import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.off
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

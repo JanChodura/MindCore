@@ -1,6 +1,6 @@
 package com.mindjourney.core.eventbus.service
 
-import com.mindjourney.core.di.CoreQualifier
+import com.mindjourney.core.eventbus.model.CoreQualifier
 import com.mindjourney.core.eventbus.observer.initializer.IDomainObserverInitializer
 import com.mindjourney.core.eventbus.trigger.initializer.IDomainTriggerInitializer
 import dagger.hilt.android.scopes.ViewModelScoped

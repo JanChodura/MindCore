@@ -1,6 +1,6 @@
 package com.mindjourney.core.eventbus.observer.initializer
 
-import com.mindjourney.core.di.CoreQualifier
+import com.mindjourney.core.eventbus.model.CoreQualifier
 import com.mindjourney.core.eventbus.model.event.context.ObserverContext
 import com.mindjourney.core.eventbus.observer.FlowObserver
 import com.mindjourney.core.eventbus.observer.TimeObserver

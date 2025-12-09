@@ -1,4 +1,7 @@
-package com.mindjourney.core.util.logging
+package com.mindjourney.core.logger.helper
+
+import com.mindjourney.core.logger.ILogger
+import com.mindjourney.core.logger.service.LogDebugSwitch
 
 class LoggerDelegate(
     private val logger: ILogger,

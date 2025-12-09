@@ -5,8 +5,8 @@ import com.mindjourney.core.eventbus.model.trigger.IAppTrigger
 import com.mindjourney.core.eventbus.model.trigger.TriggerResult
 import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
 import com.mindjourney.core.eventbus.service.reactive.TriggerResultBus
-import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.on
+import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.on
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

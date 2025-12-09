@@ -1,7 +1,7 @@
 package com.mindjourney.core.tracking.state
 
-import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.off
+import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.off
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

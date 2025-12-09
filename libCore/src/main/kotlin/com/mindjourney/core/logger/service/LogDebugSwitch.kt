@@ -1,4 +1,4 @@
-package com.mindjourney.core.util.logging
+package com.mindjourney.core.logger.service
 
 val off = LogDebugSwitch.OFF
 val on = LogDebugSwitch.ON

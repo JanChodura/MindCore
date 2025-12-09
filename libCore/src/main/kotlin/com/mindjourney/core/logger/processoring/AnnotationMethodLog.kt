@@ -1,4 +1,4 @@
-package com.mindjourney.core.util.logging.processoring
+package com.mindjourney.core.logger.processoring
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)

@@ -1,4 +1,4 @@
-package com.mindjourney.core.logger
+package com.mindjourney.core.logger.config
 
 interface ILoggerConfig {
     val tag: String

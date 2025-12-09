@@ -1,7 +1,7 @@
-package com.mindjourney.core.util.logging
+package com.mindjourney.core.logger.service
 
-import com.mindjourney.core.logger.LoggerProvider
-import com.mindjourney.core.util.logging.processoring.ILoggingWrapper
+import com.mindjourney.core.logger.ILogger
+import com.mindjourney.core.logger.processoring.ILoggingWrapper
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.isAccessible
 

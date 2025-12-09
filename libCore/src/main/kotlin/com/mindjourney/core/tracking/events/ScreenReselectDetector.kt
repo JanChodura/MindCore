@@ -1,8 +1,8 @@
 package com.mindjourney.core.tracking.events
 
 import com.mindjourney.core.tracking.model.ScreenChangeCounter
-import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.on
+import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.on
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

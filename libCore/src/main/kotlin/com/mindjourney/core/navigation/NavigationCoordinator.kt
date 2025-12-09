@@ -3,9 +3,8 @@ package com.mindjourney.core.navigation
 import com.mindjourney.core.tracking.ScreenTrackerFactory
 import com.mindjourney.core.tracking.ScreenTracker
 import com.mindjourney.core.tracking.model.CoreScreen
-import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.off
-import com.mindjourney.core.util.logging.on
+import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.off
 import jakarta.inject.Inject
 import javax.inject.Singleton
 

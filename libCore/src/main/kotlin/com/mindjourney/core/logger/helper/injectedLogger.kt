@@ -1,4 +1,8 @@
-package com.mindjourney.core.util.logging
+package com.mindjourney.core.logger.helper
+
+import com.mindjourney.core.logger.service.GlobalLoggerHolder
+import com.mindjourney.core.logger.service.LogDebugSwitch
+import com.mindjourney.core.logger.service.off
 
 inline fun <reified T> injectedLogger(
     logDebugSwitch: LogDebugSwitch = off

@@ -1,4 +1,4 @@
-package com.mindjourney.core.util.logging.processoring
+package com.mindjourney.core.logger.processoring
 
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration

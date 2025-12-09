@@ -1,12 +1,12 @@
 package com.mindjourney.core.di
 
 import com.mindjourney.common.BuildConfig
-import com.mindjourney.core.logger.ILoggerConfig
-import com.mindjourney.core.util.logging.AppLogger
-import com.mindjourney.core.util.logging.GlobalLoggerHolder
-import com.mindjourney.core.util.logging.ILogger
-import com.mindjourney.core.util.logging.LoggingDelegate
-import com.mindjourney.core.util.logging.processoring.ILoggingWrapper
+import com.mindjourney.core.logger.config.ILoggerConfig
+import com.mindjourney.core.logger.AppLogger
+import com.mindjourney.core.logger.service.GlobalLoggerHolder
+import com.mindjourney.core.logger.ILogger
+import com.mindjourney.core.logger.service.LoggingDelegate
+import com.mindjourney.core.logger.processoring.ILoggingWrapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

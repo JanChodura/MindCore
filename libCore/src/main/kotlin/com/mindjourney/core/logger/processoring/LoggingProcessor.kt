@@ -1,4 +1,4 @@
-package com.mindjourney.core.util.logging.processoring
+package com.mindjourney.core.logger.processoring
 
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor

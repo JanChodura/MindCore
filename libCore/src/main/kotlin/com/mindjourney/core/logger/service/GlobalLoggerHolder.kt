@@ -1,4 +1,7 @@
-package com.mindjourney.core.util.logging
+package com.mindjourney.core.logger.service
+
+import com.mindjourney.core.logger.ILogger
+import com.mindjourney.core.logger.TestLogger
 
 /**
  * A global logger holder to provide a logger instance throughout the app.

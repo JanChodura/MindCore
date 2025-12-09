@@ -6,8 +6,8 @@ import com.mindjourney.core.tracking.model.CoreScreen
 import com.mindjourney.core.tracking.state.HistoryScreenHolder
 import com.mindjourney.core.tracking.state.NavigationReadinessTracker
 import com.mindjourney.core.tracking.state.ScreenStateHolder
-import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.off
+import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.off
 import jakarta.inject.Inject
 import javax.inject.Singleton
 

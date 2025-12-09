@@ -2,9 +2,8 @@ package com.mindjourney.core.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.mindjourney.core.logger.LoggerProvider
-import com.mindjourney.core.util.logging.injectedLogger
-import com.mindjourney.core.util.logging.off
+import com.mindjourney.core.logger.helper.injectedLogger
+import com.mindjourney.core.logger.service.off
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

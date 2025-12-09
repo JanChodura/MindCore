@@ -1,5 +1,6 @@
-package com.mindjourney.core.util.logging
+package com.mindjourney.core.logger
 
+import com.mindjourney.core.logger.service.LogDebugSwitch
 import java.util.logging.ConsoleHandler
 import java.util.logging.Formatter
 import java.util.logging.Level

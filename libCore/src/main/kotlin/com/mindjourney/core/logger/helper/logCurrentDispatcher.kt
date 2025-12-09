@@ -1,4 +1,4 @@
-package com.mindjourney.core.util
+package com.mindjourney.core.logger.helper
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext

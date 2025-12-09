@@ -1,4 +1,6 @@
-package com.mindjourney.core.util.logging
+package com.mindjourney.core.logger
+
+import com.mindjourney.core.logger.service.LogDebugSwitch
 
 /**
  * An interface for different logging implementations.

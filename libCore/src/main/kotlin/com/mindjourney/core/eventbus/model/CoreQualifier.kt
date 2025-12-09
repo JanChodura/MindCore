@@ -1,4 +1,4 @@
-package com.mindjourney.core.di
+package com.mindjourney.core.eventbus.model
 
 import jakarta.inject.Qualifier
 

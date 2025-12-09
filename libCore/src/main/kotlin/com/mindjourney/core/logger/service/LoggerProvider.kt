@@ -1,7 +1,7 @@
-package com.mindjourney.core.logger
+package com.mindjourney.core.logger.service
 
-import com.mindjourney.core.util.logging.ILogger
-import com.mindjourney.core.util.logging.TestLogger
+import com.mindjourney.core.logger.ILogger
+import com.mindjourney.core.logger.TestLogger
 
 object LoggerProvider {
 

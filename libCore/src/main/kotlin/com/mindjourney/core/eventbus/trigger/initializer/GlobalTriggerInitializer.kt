@@ -1,6 +1,6 @@
 package com.mindjourney.core.eventbus.trigger.initializer
 
-import com.mindjourney.core.di.CoreQualifier
+import com.mindjourney.core.eventbus.model.CoreQualifier
 import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
 import com.mindjourney.core.eventbus.service.IEventManager
 import jakarta.inject.Inject
