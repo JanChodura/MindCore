@@ -1,7 +1,6 @@
 package com.mindjourney.core.eventbus.model.trigger
 
 import com.mindjourney.core.eventbus.model.trigger.result.TriggerResultType
-import com.mindjourney.core.eventbus.model.trigger.context.TriggerContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 
@@ -18,7 +17,6 @@ class SimpleEagerTrigger @Inject constructor() : BaseTrigger() {
 
     override var description: TriggerDescription =
         TriggerDescription("SimpleTrigger")
-
 
     override suspend fun tryExecute(
     ): TriggerResultType {
