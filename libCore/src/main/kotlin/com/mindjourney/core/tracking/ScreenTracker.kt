@@ -8,6 +8,7 @@ import com.mindjourney.core.tracking.state.NavigationReadinessTracker
 import com.mindjourney.core.tracking.state.ScreenStateHolder
 import com.mindjourney.core.logger.helper.injectedLogger
 import com.mindjourney.core.logger.service.off
+import com.mindjourney.core.logger.service.on
 import jakarta.inject.Inject
 import javax.inject.Singleton
 
@@ -37,7 +38,7 @@ class ScreenTracker @Inject constructor(
     private val fromRoute: (String?) -> CoreScreen = { CoreScreen.Unknown }
 ) {
 
-    private val log = injectedLogger<ScreenTracker>(off)
+    private val log = injectedLogger<ScreenTracker>(on)
 
     // --- Core subcomponents ---
     val state = ScreenStateHolder(startingScreen)
