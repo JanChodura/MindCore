@@ -11,6 +11,6 @@ package com.mindjourney.core.eventbus.service
  * It is typically called by ReactiveHandler during ViewModel activation.
  */
 
-interface IDomainEventBusInitializer {
+fun interface IDomainEventBusInitializer {
     fun initialize()
 }
