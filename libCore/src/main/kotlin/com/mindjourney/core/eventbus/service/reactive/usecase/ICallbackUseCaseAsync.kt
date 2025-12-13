@@ -55,18 +55,30 @@ import kotlinx.coroutines.flow.Flow
 interface ICallbackUseCaseAsync {
 
     /**
-     * Reactive condition that determines *when* the UseCase
+     * Reactive condition that determines **when** this UseCase
      * is allowed to execute.
      *
-     * Each emission represents a signal that the domain action
-     * may be performed.
+     * The Flow must emit `true` **only when the required condition is satisfied**.
+     * Emissions of `false` are ignored.
+     *
+     * The ReactiveHandler will:
+     * - subscribe to this Flow,
+     * - wait for the **first `true` emission**,
+     * - execute the UseCase **exactly once**,
+     * - then cancel the subscription.
+     *
+     * IMPORTANT:
+     * - This Flow must NOT emit `true` immediately on subscription
+     *   unless the condition is already fulfilled.
+     * - It is expected to be derived from StateFlow or other reactive state.
      *
      * Typical examples:
-     * - entries.first { it.isNotEmpty() }
+     * - entries.map { it.isNotEmpty() }.distinctUntilChanged()
      * - isLoaded.filter { it }
-     * - phase.filter { it == READY }
+     * - phase.map { it == READY }.distinctUntilChanged()
      */
-    val reactiveFlow: Flow<Unit>
+    val reactiveFlow: Flow<Boolean>
+
 
     /**
      * Returns the domain action to be executed once the reactive
