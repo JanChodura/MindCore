@@ -27,7 +27,7 @@ class EventManager @Inject constructor(
     private val triggerResultBus: TriggerResultBus
 ) : IEventManager {
 
-    private val log = injectedLogger<EventManager>(off)
+    private val log = injectedLogger<EventManager>(on)
     private val bindings = mutableMapOf<Class<out ObserverEvent>, MutableList<IAppTrigger>>()
 
     /** Register trigger-event association */
