@@ -4,13 +4,15 @@ import app.cash.turbine.test
 import com.mindjourney.core.eventbus.model.event.ObserverEvent
 import com.mindjourney.core.eventbus.model.event.context.FlowObserverContext
 import com.mindjourney.core.eventbus.model.trigger.SimpleEagerTrigger
+import com.mindjourney.core.eventbus.model.trigger.TriggerResult
 import com.mindjourney.core.eventbus.model.trigger.result.TriggerResultType
 import com.mindjourney.core.eventbus.observer.FlowObserver
 import com.mindjourney.core.eventbus.service.EventManager
-import com.mindjourney.core.eventbus.service.reactive.consumer.GlobalTriggerResultConsumer
+import com.mindjourney.core.eventbus.service.reactive.TriggerResultBus
 import com.mindjourney.core.eventbus.testutil.NoopTerminator
 import com.mindjourney.core.eventbus.testutil.UtilTriggerContext
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -30,8 +32,8 @@ class FlowObserverEmitTest {
         val scope = TestScope(dispatcher)
 
         val sourceFlow = MutableSharedFlow<String>(replay = 1)
-        val consumer = GlobalTriggerResultConsumer()
-        val eventManager = EventManager(scope, consumer)
+        val triggerResultBus = TriggerResultBus()
+        val eventManager = EventManager(scope, triggerResultBus)
 
         val trigger = SimpleEagerTrigger()
 
@@ -40,7 +42,7 @@ class FlowObserverEmitTest {
         eventManager.register(triggerContext)
 
         // FlowObserver
-        val observer = FlowObserver(scope, NoopTerminator())
+        val observer = FlowObserver(scope, NoopTerminator(emptyFlow()))
         val flowContext = FlowObserverContext(
             flow = sourceFlow,
             mapToEvent = { value -> ObserverEvent.FlowChanged(value) },
@@ -50,9 +52,9 @@ class FlowObserverEmitTest {
         observer.start(eventManager, flowContext)
 
         // Act & Assert
-        consumer.results.test {
+        triggerResultBus.results.test {
             sourceFlow.emit("HELLO")
-            val emission = awaitItem()
+            val emission: TriggerResult = awaitItem()
 
             assertEquals(TriggerResultType.Success, emission.type)
             assertEquals(trigger.description, emission.description)
