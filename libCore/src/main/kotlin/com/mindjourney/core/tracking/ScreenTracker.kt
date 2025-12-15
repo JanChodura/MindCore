@@ -35,7 +35,6 @@ import javax.inject.Singleton
 @Singleton
 class ScreenTracker @Inject constructor(
     private val startingScreen: CoreScreen = CoreScreen.Unknown,
-    private val fromRoute: (String?) -> CoreScreen = { CoreScreen.Unknown }
 ) {
 
     private val log = injectedLogger<ScreenTracker>(on)

@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
  *
  * ---
  */
-class ScreenReselectDetector() {
+class ScreenReselectDetector {
 
     private val log = injectedLogger<ScreenReselectDetector>(off)
 

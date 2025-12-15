@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.StateFlow
  * }
  * ```
  */
-class NavigationReadinessTracker() {
+class NavigationReadinessTracker {
 
     private val log = injectedLogger<NavigationReadinessTracker>(off)
 

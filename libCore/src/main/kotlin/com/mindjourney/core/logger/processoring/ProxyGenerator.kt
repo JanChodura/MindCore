@@ -17,36 +17,43 @@ object ProxyGenerator {
             val className = classDecl.simpleName.asString()
 
             val loggingWrapperFile = FileSpec.builder(packageName, "${className}LoggingProxy")
-                .addType(
-                    TypeSpec.classBuilder("${className}LoggingProxy")
-                        .addSuperinterface(ClassName.bestGuess(LoggingConstants.LOGGING_WRAPPER))
-                        .primaryConstructor(
-                            FunSpec.constructorBuilder()
-                                .addParameter("delegate", ClassName("", className))
-                                .build()
-                        )
-                        .addProperty(
-                            PropertySpec.builder("delegate", ClassName("", className))
-                                .initializer("delegate")
-                                .build()
-                        )
-                        .apply {
-                            methods.forEach { method ->
-                                addFunction(
-                                    FunSpec.builder(method.simpleName.asString())
-                                        .addStatement("println(\"MJ: Logging: ${method.simpleName.asString()}\")")
-                                        .addStatement("delegate.${method.simpleName.asString()}()")
-                                        .build()
-                                )
-                            }
-                        }
-                        .build()
-                )
+                .addType(addFullLog(className, methods))
                 .build()
 
             val outputDir = File("generated/")
             outputDir.mkdirs()
             loggingWrapperFile.writeTo(outputDir)
         }
+    }
+
+    private fun addFullLog(
+        className: String,
+        methods: List<KSFunctionDeclaration>
+    ): TypeSpec = TypeSpec.classBuilder("${className}LoggingProxy")
+        .addSuperinterface(ClassName.bestGuess(LoggingConstants.LOGGING_WRAPPER))
+        .primaryConstructor(
+            FunSpec.constructorBuilder()
+                .addParameter("delegate", ClassName("", className))
+                .build()
+        )
+        .addProperty(
+            PropertySpec.builder("delegate", ClassName("", className))
+                .initializer("delegate")
+                .build()
+        )
+        .apply {
+            methods.forEach { method ->
+                addFunctionLog(method)
+            }
+        }
+        .build()
+
+    private fun TypeSpec.Builder.addFunctionLog(method: KSFunctionDeclaration) {
+        addFunction(
+            FunSpec.builder(method.simpleName.asString())
+                .addStatement("println(\"MJ: Logging: ${method.simpleName.asString()}\")")
+                .addStatement("delegate.${method.simpleName.asString()}()")
+                .build()
+        )
     }
 }

@@ -1,7 +1,5 @@
 package com.mindjourney.core.eventbus.service.reactive.usecase
 
-import kotlinx.coroutines.flow.StateFlow
-
 /**
  * Represents a ViewModel-defined domain UseCase whose execution is exposed
  * as a synchronous callback.

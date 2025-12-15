@@ -13,6 +13,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 import jakarta.inject.Inject
 
+const val ONE_MINUTE_MILLIS = 60_000L
+
 /**
  * Observer that produces time-based ObserverEvents according to a TimeObserverPolicy.
  *
@@ -41,7 +43,7 @@ class TimeObserver @Inject constructor(
                     emitEvent(eventManager, now)
                 }
 
-                delay(policy.intervalMinutes * 60_000)
+                delay(policy.intervalMinutes * ONE_MINUTE_MILLIS)
             }
         }
 
